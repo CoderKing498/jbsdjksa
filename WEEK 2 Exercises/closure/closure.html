@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ejercicio 1 — Closure: Generador de saludos</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: #f9fafc;
+        color: #181e4b;
+      }
+
+      header {
+        background: #6b5cff;
+        color: #fff;
+        padding: 1.5rem 2rem;
+      }
+      header h1 {
+        font-size: 1.5rem;
+      }
+      header p {
+        font-size: 0.9rem;
+        opacity: 0.85;
+        margin-top: 0.3rem;
+      }
+
+      .contenedor {
+        max-width: 820px;
+        margin: 2rem auto;
+        padding: 0 1.5rem 3rem;
+      }
+
+      .teoria {
+        background: #fff;
+        border-left: 5px solid #6b5cff;
+        border-radius: 10px;
+        padding: 1.4rem 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .teoria h2 {
+        color: #6b5cff;
+        font-size: 1rem;
+        margin-bottom: 0.6rem;
+      }
+      .teoria p {
+        font-size: 0.92rem;
+        line-height: 1.75;
+        color: #444;
+        margin-bottom: 0.5rem;
+      }
+      .teoria p:last-child {
+        margin-bottom: 0;
+      }
+
+      pre {
+        background: #181e4b;
+        color: #a5b4fc;
+        padding: 1rem 1.2rem;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        line-height: 1.75;
+        overflow-x: auto;
+        margin: 0.8rem 0;
+        white-space: pre;
+      }
+
+      .ejercicio {
+        background: #fff;
+        border-radius: 10px;
+        padding: 1.4rem 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .ejercicio h3 {
+        font-size: 0.98rem;
+        margin-bottom: 0.6rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #ecf0f6;
+      }
+      .ejercicio p {
+        font-size: 0.85rem;
+        color: #666;
+        margin-bottom: 0.8rem;
+        line-height: 1.6;
+      }
+
+      /* Paso a paso */
+      .pasos {
+        margin-bottom: 1rem;
+      }
+      .paso {
+        display: flex;
+        gap: 0.8rem;
+        align-items: flex-start;
+        padding: 0.65rem 0.9rem;
+        border-radius: 8px;
+        border: 2px solid #ecf0f6;
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+        transition: border 0.2s;
+      }
+      .paso:hover {
+        border-color: #6b5cff;
+      }
+      .paso-num {
+        background: #6b5cff;
+        color: #fff;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.78rem;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+      .paso-txt {
+        color: #444;
+        line-height: 1.6;
+      }
+      .paso-txt code {
+        background: #ede9ff;
+        color: #6b5cff;
+        padding: 0.1rem 0.4rem;
+        border-radius: 3px;
+        font-size: 0.8rem;
+      }
+      .paso-txt strong {
+        color: #181e4b;
+      }
+
+      label {
+        display: block;
+        font-size: 0.83rem;
+        font-weight: 600;
+        color: #6b5cff;
+        margin-bottom: 0.3rem;
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 0.6rem 0.9rem;
+        border: 2px solid #ecf0f6;
+        border-radius: 8px;
+        font-size: 0.92rem;
+        margin-bottom: 0.9rem;
+        outline: none;
+        transition: border 0.2s;
+      }
+      input:focus,
+      select:focus {
+        border-color: #6b5cff;
+      }
+
+      .fila {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      .btn {
+        background: #6b5cff;
+        color: #fff;
+        border: none;
+        padding: 0.6rem 1.4rem;
+        border-radius: 8px;
+        font-size: 0.92rem;
+        cursor: pointer;
+        transition: background 0.2s;
+        margin-right: 8px;
+        margin-bottom: 6px;
+      }
+      .btn:hover {
+        background: #5546e8;
+      }
+      .btn-danger {
+        background: #fe654f;
+      }
+      .btn-danger:hover {
+        background: #e0452f;
+      }
+
+      .resultado {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        display: none;
+        line-height: 1.7;
+      }
+      .resultado.visible {
+        display: block;
+      }
+      .resultado.ok {
+        background: #d1faf0;
+        border-left: 4px solid #5acca4;
+        color: #065f46;
+      }
+      .resultado.error {
+        background: #ffe8e4;
+        border-left: 4px solid #fe654f;
+        color: #7f1d1d;
+      }
+      .resultado.info {
+        background: #ede9ff;
+        border-left: 4px solid #6b5cff;
+        color: #3b2faa;
+      }
+      .resultado pre {
+        background: #181e4b;
+        color: #a5b4fc;
+        border-radius: 6px;
+        padding: 0.7rem 1rem;
+        font-size: 0.79rem;
+        margin-top: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Ejercicio 1 — Closure</h1>
+      <p>Generador de saludos · Lección 2</p>
+    </header>
+
+    <div class="contenedor">
+      <!-- TEORÍA RÁPIDA -->
+      <div class="teoria">
+        <h2>Recuerda: ¿qué es un Closure?</h2>
+        <p>
+          Un closure ocurre cuando una función interna
+          <strong>recuerda las variables</strong>
+          de su función exterior, aunque esa función ya haya terminado de
+          ejecutarse. La función retornada lleva consigo una "mochila" con esas
+          variables.
+        </p>
+        <pre>
+// Ejemplo base de closure
+function crearMensaje(prefijo) {
+  // "prefijo" quedará en el closure de la función retornada
+  return function(texto) {
+    return prefijo + " " + texto; // accede a "prefijo" del exterior
+  };
+}
+
+const avisar  = crearMensaje("⚠️ AVISO:");
+const informar = crearMensaje("ℹ️ INFO:");
+
+avisar("El sistema caerá")   // "⚠️ AVISO: El sistema caerá"
+informar("Todo está bien")   // "ℹ️ INFO: Todo está bien"</pre
+        >
+      </div>
+
+      <!-- EJERCICIO -->
+      <div class="ejercicio">
+        <h3>🧪 Tu turno — Completa la función en el archivo JS</h3>
+        <p>
+          Abre el archivo <code>ejercicio1.js</code> y completa la función
+          <code>crearSaludo(idioma)</code> siguiendo los pasos de abajo. Luego
+          prueba con el formulario.
+        </p>
+
+        <!-- PASO A PASO -->
+        <div class="pasos">
+          <div class="paso">
+            <div class="paso-num">1</div>
+            <div class="paso-txt">
+              Dentro de <code>crearSaludo(idioma)</code> escribe
+              <code>return function(nombre) { }</code>. Esa función interna es
+              la que <strong>cerrará sobre</strong> el parámetro
+              <code>idioma</code>.
+            </div>
+          </div>
+          <div class="paso">
+            <div class="paso-num">2</div>
+            <div class="paso-txt">
+              Dentro de la función retornada, accede al diccionario con
+              <code>saludos[idioma]</code>. Esto funciona porque
+              <code>idioma</code> vive en el <strong>closure</strong> — aunque
+              <code>crearSaludo</code> ya terminó.
+            </div>
+          </div>
+          <div class="paso">
+            <div class="paso-num">3</div>
+            <div class="paso-txt">
+              Retorna el saludo completo con un template literal:
+              <code>`${saludos[idioma]}, ${nombre}!`</code>
+            </div>
+          </div>
+          <div class="paso">
+            <div class="paso-num">4</div>
+            <div class="paso-txt">
+              Prueba creando dos funciones con distintos idiomas y comprueba que
+              son
+              <strong>independientes</strong>:
+              <code>const saludarES = crearSaludo("español")</code> y
+              <code>const saludarEN = crearSaludo("inglés")</code>.
+            </div>
+          </div>
+        </div>
+
+        <!-- Código base para completar -->
+        <pre>
+// ── Diccionario de saludos ────────────────────────────────
+const saludos = {
+  español  : "¡Hola",
+  inglés   : "Hello",
+  francés  : "Bonjour",
+  portugués: "Olá",
+};
+
+// ── COMPLETA ESTA FUNCIÓN ─────────────────────────────────
+function crearSaludo(idioma) {
+
+  // Paso 1: retorna una función que reciba "nombre"
+  // Paso 2: dentro, accede a saludos[idioma]  ← CLOSURE
+  // Paso 3: retorna el string con template literal
+
+}
+
+// ── Prueba tu solución ────────────────────────────────────
+// const saludarES = crearSaludo("español");
+// console.log( saludarES("Ana") );   // "¡Hola, Ana!"
+// console.log( saludarES("Pedro") ); // "¡Hola, Pedro!"</pre
+        >
+
+        <div class="fila">
+          <div>
+            <label for="e1Idioma">Idioma del saludo</label>
+            <select id="e1Idioma">
+              <option value="español">español</option>
+              <option value="inglés">inglés</option>
+              <option value="francés">francés</option>
+              <option value="portugués">portugués</option>
+              <option value="Japones">Japones</option>
+              <option value="Mandarin">Mandarin</option>
+              <option value="Lingala">Lingala</option>
+              <option value="Arabe">Arabe</option>
+            </select>
+          </div>
+          <div>
+            <label for="e1Nombre">Nombre a saludar</label>
+            <input type="text" id="e1Nombre" placeholder="Ej: Ana" />
+          </div>
+        </div>
+
+        <button class="btn" onclick="probar()">▶ Probar</button>
+        <button class="btn btn-danger" onclick="reiniciar()">Reiniciar</button>
+
+        <div class="resultado" id="resultado"></div>
+      </div>
+    </div>
+    <script src="/WEEK 2 Exercises/closure/closure.js"></script>
+  </body>
+</html>

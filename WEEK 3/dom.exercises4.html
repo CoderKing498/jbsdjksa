@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ejercicios DOM — M3S3</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal:   #4ecdc4;
+    --purple: #b39ddb;
+    --yellow: #ffd54f;
+    --pink:   #f48fb1;
+    --green:  #81c784;
+    --red:    #ef5350;
+    --dark:   #0d0d14;
+    --card:   #1e1e30;
+    --border: rgba(255,255,255,0.07);
+    --text:   #e8e8f0;
+    --muted:  #8888aa;
+    --mono:   'Space Mono', monospace;
+    --sans:   'Syne', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(78,205,196,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(78,205,196,0.035) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  header {
+    position: relative;
+    z-index: 1;
+    padding: 3rem 2rem 2rem;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  .tag-label {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--teal);
+    background: rgba(78,205,196,0.1);
+    border: 1px solid rgba(78,205,196,0.25);
+    padding: 0.3rem 0.8rem;
+    border-radius: 2px;
+    margin-bottom: 1.25rem;
+    text-transform: uppercase;
+  }
+
+  header h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.75rem;
+  }
+
+  header h1 span { color: var(--teal); }
+
+  header p {
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    max-width: 500px;
+  }
+
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 1.5rem 2rem 6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  /* ── CARD ── */
+  .ex-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .ex-card:nth-child(1)  { animation-delay: .04s; }
+  .ex-card:nth-child(2)  { animation-delay: .08s; }
+  .ex-card:nth-child(3)  { animation-delay: .12s; }
+  .ex-card:nth-child(4)  { animation-delay: .16s; }
+  .ex-card:nth-child(5)  { animation-delay: .20s; }
+  .ex-card:nth-child(6)  { animation-delay: .24s; }
+  .ex-card:nth-child(7)  { animation-delay: .28s; }
+  .ex-card:nth-child(8)  { animation-delay: .32s; }
+  .ex-card:nth-child(9)  { animation-delay: .36s; }
+  .ex-card:nth-child(10) { animation-delay: .40s; }
+  .ex-card:nth-child(11) { animation-delay: .44s; }
+  .ex-card:nth-child(12) { animation-delay: .48s; }
+
+  .c-teal   { --accent: var(--teal);   --accent-bg: rgba(78,205,196,0.1);  --accent-bd: rgba(78,205,196,0.2); }
+  .c-purple { --accent: var(--purple); --accent-bg: rgba(179,157,219,0.1); --accent-bd: rgba(179,157,219,0.2); }
+  .c-yellow { --accent: var(--yellow); --accent-bg: rgba(255,213,79,0.1);  --accent-bd: rgba(255,213,79,0.2); }
+  .c-pink   { --accent: var(--pink);   --accent-bg: rgba(244,143,177,0.1); --accent-bd: rgba(244,143,177,0.2); }
+  .c-green  { --accent: var(--green);  --accent-bg: rgba(129,199,132,0.1); --accent-bd: rgba(129,199,132,0.2); }
+
+  .ex-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .ex-num {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 0.25rem 0.65rem;
+    border-radius: 4px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: var(--accent-bg);
+    color: var(--accent);
+    border: 1px solid var(--accent-bd);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .ex-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    flex: 1;
+  }
+
+  .ex-title code {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--accent);
+  }
+
+  .ex-topic {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .ex-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* ── TIP ── */
+  .tip {
+    background: rgba(255,255,255,0.025);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 0.85rem 1.1rem;
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .tip strong {
+    color: var(--accent);
+    font-family: var(--mono);
+  }
+
+  .task {
+    font-size: 0.88rem;
+    color: #c8c8e0;
+    line-height: 1.7;
+  }
+
+  .task code {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    background: rgba(255,255,255,0.06);
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    color: var(--accent);
+  }
+
+  /* ── SANDBOX ── */
+  .sandbox {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  /* ── INPUTS ── */
+  input[type="text"], textarea, select {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 0.875rem;
+    padding: 0.5rem 0.85rem;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    border-color: rgba(78,205,196,0.4);
+  }
+
+  select option { background: #1a1a2e; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1.1rem;
+    border-radius: 6px;
+    border: none;
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+  }
+
+  .btn-teal   { background: var(--teal);   color: var(--dark); }
+  .btn-purple { background: var(--purple); color: var(--dark); }
+  .btn-yellow { background: var(--yellow); color: var(--dark); }
+  .btn-pink   { background: var(--pink);   color: var(--dark); }
+  .btn-green  { background: var(--green);  color: var(--dark); }
+  .btn:not(.btn-ghost):not(.btn-danger):hover { filter: brightness(0.88); transform: translateY(-1px); }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+  .btn-danger {
+    background: rgba(239,83,80,0.12);
+    color: var(--red);
+    border: 1px solid rgba(239,83,80,0.25);
+  }
+  .btn-danger:hover { background: rgba(239,83,80,0.22); transform: translateY(-1px); }
+
+  .btn-row {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .row { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; }
+
+  /* ── OUTPUT ── */
+  .out {
+    background: #09090f;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 0.85rem 1.1rem;
+    min-height: 52px;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--teal);
+    line-height: 1.8;
+    white-space: pre-wrap;
+  }
+
+  /* ── DEMO BOX ── */
+  .demo-box {
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    min-height: 48px;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--muted);
+    transition: all 0.3s;
+  }
+
+  /* ── CLASSLIST DEMO BOX ── */
+  .cls-box {
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 2px solid var(--border);
+    text-align: center;
+    background: rgba(255,255,255,0.03);
+    transition: all 0.3s;
+  }
+
+  /* estas clases las activan ellos con JS */
+  .activo {
+    background: rgba(78,205,196,0.15) !important;
+    border-color: var(--teal) !important;
+    color: var(--teal) !important;
+  }
+
+  .peligro {
+    background: rgba(239,83,80,0.12) !important;
+    border-color: var(--red) !important;
+    color: var(--red) !important;
+  }
+
+  /* ── MINI LIST ── */
+  .mini-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-height: 36px;
+  }
+
+  .mini-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.82rem;
+    animation: slideIn 0.2s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── CAJAS EJ 3 ── */
+  .caja {
+    flex: 1;
+    border-radius: 6px;
+    padding: 0.65rem 1rem;
+    font-size: 0.72rem;
+    font-family: var(--mono);
+    text-align: center;
+    transition: outline 0.2s;
+  }
+
+  #caja-roja  { background: rgba(239,83,80,0.2);   border: 1px solid rgba(239,83,80,0.4);   color: #ef5350; }
+  #caja-verde { background: rgba(129,199,132,0.15); border: 1px solid rgba(129,199,132,0.3); color: #81c784; }
+  #caja-azul  { background: rgba(100,181,246,0.15); border: 1px solid rgba(100,181,246,0.3); color: #64b5f6; }
+
+  /* ── TRAVERSAL ── */
+  .trav-node {
+    padding: 0.25rem 0.75rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    transition: background 0.2s;
+    border: 1px solid transparent;
+  }
+
+  .trav-node:hover { background: rgba(255,255,255,0.05); }
+
+  /* clase que activan ellos con JS */
+  .resaltado {
+    background: rgba(255,213,79,0.18) !important;
+    border-color: rgba(255,213,79,0.4) !important;
+    color: var(--yellow) !important;
+  }
+
+  /* ── DRAG & DROP ── */
+  .drag-area { display: flex; gap: 1rem; }
+
+  .dzone {
+    flex: 1;
+    min-height: 90px;
+    background: rgba(255,255,255,0.02);
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    padding: 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  /* clase que activan ellos con JS */
+  .dragover-active {
+    border-color: rgba(244,143,177,0.5) !important;
+    background: rgba(244,143,177,0.04) !important;
+  }
+
+  .dchip {
+    background: rgba(244,143,177,0.12);
+    border: 1px solid rgba(244,143,177,0.25);
+    color: var(--pink);
+    border-radius: 5px;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: grab;
+    user-select: none;
+    transition: opacity 0.15s, transform 0.15s;
+  }
+
+  .dchip:active { cursor: grabbing; }
+
+  /* clase que activan ellos con JS */
+  .arrastrando { opacity: 0.3; }
+
+  /* ── CANVAS ── */
+  canvas {
+    width: 100%;
+    height: 150px;
+    display: block;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #09090f;
+    cursor: crosshair;
+    touch-action: none;
+  }
+
+  /* ── EVENT LOG ── */
+  .ev-log {
+    background: #09090f;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    height: 120px;
+    overflow-y: auto;
+    padding: 0.7rem 1rem;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    line-height: 2;
+    color: var(--muted);
+  }
+
+  .ev-log::-webkit-scrollbar { width: 3px; }
+  .ev-log::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── LABEL ── */
+  .lbl {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 0.35rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="tag-label">Ejercicios Prácticos · M3S3 · DOM</div>
+  <h1>Practica el <span>DOM</span><br>uno a uno</h1>
+  <p>El HTML y el CSS ya están listos. Tu misión: escribir el JavaScript en el <code style="font-family:var(--mono);font-size:0.85rem;color:var(--teal)">&lt;script&gt;</code> para que cada ejercicio funcione.</p>
+</header>
+
+<main>
+
+  <!-- ══════════════════════════════════════
+       EJ 1 — textContent
+  ══════════════════════════════════════ -->
+  <div class="ex-card c-teal">
+    <div class="ex-head">
+      <span class="ex-num">01</span>
+      <span class="ex-title">Cambiar texto con <code>textContent</code></span>
+      <span class="ex-topic">textContent</span>
+    </div>
+    <div class="ex-body">
+      <div class="tip">
+        💡 <strong>textContent</strong> lee o reemplaza el texto de un elemento sin interpretar HTML. Para leer: <strong>el.textContent</strong>. Para escribir: <strong>el.textContent = "nuevo texto"</strong>. Es más seguro que innerHTML cuando solo necesitas texto.
+      </div>
+      <p class="task">
+        Al hacer clic en el botón, toma el valor del input y ponlo dentro de <code>&lt;p id="salida-1"&gt;</code> usando <code>textContent</code>. Si el input está vacío, no hagas nada.
+      </p>
+      <div class="sandbox">
+        <div class="row">
+          <input type="text" id="input-1" placeholder="Escribe tu nombre..." style="flex:1">
+          <button class="btn btn-teal" id="btn-1">Aplicar</button>
+        </div>
+        <p id="salida-1" class="demo-box">El texto aparecerá aquí...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       EJ 2 — innerHTML
+  ══════════════════════════════════════ -->
+  <div class="ex-card c-purple">
+    <div class="ex-head">
+      <span class="ex-num">02</span>
+      <span class="ex-title">Insertar HTML con <code>innerHTML</code></span>
+      <span class="ex-topic">innerHTML</span>
+    </div>
+    <div class="ex-body">
+      <div class="tip">
+        💡 <strong>innerHTML</strong> interpreta el string como HTML real. Puedes meter etiquetas como <strong>&lt;strong&gt;</strong>, <strong>&lt;em&gt;</strong>, <strong>&lt;ul&gt;&lt;li&gt;</strong>. ⚠️ Nunca pongas datos del usuario directamente (riesgo XSS).
+      </div>
+      <p class="task">
+        Cada botón debe inyectar un HTML distinto en <code>&lt;div id="salida-2"&gt;</code> usando <code>innerHTML</code>. Inventa el contenido de cada uno: texto con estilo, una lista, un badge con color.
+      </p>
+      <div class="sandbox">
+        <div class="btn-row">
+          <button class="btn btn-purple" id="btn-2a">Texto con estilo</button>
+          <button class="btn btn-purple" id="btn-2b">Lista HTML</button>
+          <button class="btn btn-purple" id="btn-2c">Badge</button>
+        </div>
+        <div id="salida-2" class="demo-box">El resultado aparecerá aquí...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       EJ 3 — getElementById / querySelector
+  ══════════════════════════════════════ -->
+  <div class="ex-card c-teal">
+    <div class="ex-head">
+      <span class="ex-num">03</span>
+      <span class="ex-title">Seleccionar elementos del DOM</span>
+      <span class="ex-topic">getElementById · querySelector · querySelectorAll</span>
+    </div>
+    <div class="ex-body">
+      <div class="tip">
+        💡 <strong>getElementById("id")</strong> busca por ID (sin #). <strong>querySelector(selector)</strong> acepta cualquier selector CSS y devuelve el primer match. <strong>querySelectorAll</strong> devuelve todos como NodeList — recórrela con <strong>forEach</strong>.
+      </div>
+      <p class="task">
+        Al hacer clic en "Seleccionar", lee el selector del input y búscalo con <code>querySelector</code>. Muestra el <code>tagName</code>, <code>id</code> y <code>className</code> en <code>#salida-3</code>. Si no se encuentra, muéstralo también. Prueba con: <code>#caja-roja</code>, <code>.caja</code>, <code>#caja-azul</code>.
+      </p>
+      <div class="sandbox">
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+          <div id="caja-roja"  class="caja">#caja-roja</div>
+          <div id="caja-verde" class="caja">#caja-verde · .caja</div>
+          <div id="caja-azul"  class="caja">#caja-azul · .caja</div>
+        </div>
+        <div class="row">
+          <input type="text" id="input-3" placeholder='ej: #caja-roja  o  .caja' style="flex:1">
+          <button class="btn btn-teal" id="btn-3">Seleccionar</button>
+        </div>
+        <div class="out" id="salida-3">// resultado aparecerá aquí</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       EJ 4 — createElement + appendChild
+  ══════════════════════════════════════ -->
+  <div class="ex-card c-green">
+    <div class="ex-head">
+      <span class="ex-num">04</span>
+      <span class="ex-title">Crear e insertar elementos</span>
+      <span class="ex-topic">createElement · appendChild</span>
+    </div>
+    <div class="ex-body">
+      <div class="tip">
+        💡 <strong>createElement("tag")</strong> crea un nodo en memoria — aún no está en la página. <strong>appendChild(el)</strong> lo inserta al final del padre. Flujo: crear → configurar (<code>textContent</code>, clases…) → insertar.
+      </div>
+      <p class="task">
+        Al hacer clic en "+ Agregar", crea un <code>&lt;li&gt;</code> con el texto del input y añádelo a <code>&lt;ul id="lista-4"&gt;</code> con <code>appendChild</code>. El botón "Limpiar" vacía la lista con <code>innerHTML = ""</code>. Si el input está vacío, no agregar.
+      </p>
+      <div class="sandbox">
+        <div class="row">
+          <input type="text" id="input-4" placeholder="Nombre del ítem..." style="flex:1">
+          <button class="btn btn-green" id="btn-4-add">+ Agregar</button>
+          <button class="btn btn-danger" id="btn-4-clear">Limpiar</button>
+        </div>
+        <ul class="mini-list" id="lista-4"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       EJ 5 — classList
+  ══════════════════════════════════════ -->
+  <div class="ex-card c-teal">
+    <div class="ex-head">
+      <span class="ex-num">05</span>
+      <span class="ex-title">Manejar clases CSS con JS</span>
+      <span class="ex-topic">classList.add · remove · toggle · contains</span>
+    </div>
+    <div class="ex-body">
+      <div class="tip">
+        💡 <strong>classList.add("x")</strong> agrega, <strong>.remove("x")</strong> quita, <strong>.toggle("x")</strong> alterna (si no la tiene la agrega, si la tiene la quita). <strong>.contains("x")</strong> retorna true/false. Las clases <code>activo</code> y <code>peligro</code> ya están definidas en el CSS de esta página.
+      </div>
+      <p class="task">
+        Cada botón aplica su método sobre <code>#cls-box</code>. Después de cada acción, muestra en <code>#salida-5</code> las clases actuales del elemento usando <code>el.className</code>.
+      </p>
+      <div class="sandbox">
+        <div class="cls-box" id="cls-box">Soy la caja — interactúa con los botones</div>
+        <div class="btn-row">
+          <button class="btn btn-teal"   id="btn-5-add">classList.add("activo")</button>
+          <button class="btn btn-teal"   id="btn-5-remove">classList.remove("activo")</button>
+          <button class="btn btn-teal"   id="btn-5-toggle">classList.toggle("activo")</button>
+          <button class="btn btn-danger" id="btn-5-peligro">add("peligro")</button>
+        </div>
+        <div class="out" id="salida-5">// clases del elemento aparecerán aquí</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       EJ 6 — element.style
+  ══════════════════════════════════════ -->
+  <div class="ex-card c-yellow">
+    <div class="ex-head">
+      <span class="ex-num">06</span>
+      <span class="ex-title">Cambiar estilos con <code>element.style</code></span>
+      <span class="ex-topic">element.style</span>
+    </div>
+    <div class="ex-body">
+      <div class="tip">
+        💡 <strong>element.style.propiedad = valor</strong> aplica estilos inline. Las propiedades van en camelCase: <strong>backgroundColor</strong>, <strong>fontSize</strong>, <strong>borderRadius</strong>. Para quitar un estilo, asigna <strong>""</strong> (string vacío).
+      </div>
+      <p class="task">
+        Escucha el evento <code>change</code> de los tres <code>&lt;select&gt;</code>. Cada vez que cambien, aplica el valor seleccionado al elemento <code>#estilo-box</code> con <code>element.style</code>. Muestra el código ejecutado en <code>#salida-6</code>.
+      </p>
+      <div class="sandbox">
+        <div id="estilo-box" style="height:80px;border-radius:6px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:0.7rem;color:var(--muted);transition:all 0.3s;">
+          Caja de estilo
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.6rem;">
+          <div>
+            <div class="lbl">backgroundColor</div>
+            <select id="sel-color">
+              <option value="">— sin color —</option>
+              <option value="rgba(78,205,196,0.3)">Teal</option>
+              <option value="rgba(179,157,219,0.3)">Morado</option>
+              <option value="rgba(255,213,79,0.3)">Amarillo</option>
+              <option value="rgba(244,143,177,0.3)">Rosa</option>
+            </select>
+          </div>
+          <div>
+            <div class="lbl">fontSize</div>
+            <select id="sel-size">
+              <option value="0.7rem">Pequeño</option>
+              <option value="1rem">Normal</option>
+              <option value="1.5rem">Grande</option>
+              <option value="2rem">XL</option>
+            </select>
+          </div>
+          <div>
+            <div class="lbl">borderRadius</div>
+            <select id="sel-radius">
+              <option value="4px">Cuadrado</option>
+              <option value="16px">Suave</option>
+              <option value="50%">Círculo</option>
+            </select>
+          </div>
+        </div>
+        <div class="out" id="salida-6">// código ejecutado aparecerá aquí</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       EJ 7 — getAttribute / setAttribute
+  ══════════════════════════════════════ -->
+  <div class="ex-card c-purple">
+    <div class="ex-head">
+      <span class="ex-num">07</span>
+      <span class="ex-title">Leer y cambiar atributos</span>
+      <span class="ex-topic">getAttribute · setAttribute</span>
+    </div>
+    <div class="ex-body">
+      <div class="tip">
+        💡 <strong>getAttribute("attr")</strong> devuelve el valor de cualquier atributo HTML como string. <strong>setAttribute("attr", valor)</strong> lo cambia o lo crea si no existe. Funciona con <strong>placeholder</strong>, <strong>href</strong>, <strong>src</strong>, <strong>type</strong>, <strong>data-*</strong>…
+      </div>
+      <p class="task">
+        El input tiene varios atributos. Implementa cada botón: "Leer" muestra el <code>placeholder</code> actual con <code>getAttribute</code>. "Cambiar" lo reemplaza con <code>setAttribute</code>. "Toggle type" alterna entre <code>text</code> y <code>password</code>.
+      </p>
+      <div class="sandbox">
+        <input type="text" id="input-7" placeholder="Soy el input de prueba" data-info="ejercicio-7">
+        <div class="btn-row">
+          <button class="btn btn-purple" id="btn-7-read">Leer placeholder</button>
+          <button class="btn btn-purple" id="btn-7-set">Cambiar placeholder</button>
+          <button class="btn btn-purple" id="btn-7-type">Toggle type</button>
+        </div>
+        <div class="out" id="salida-7">// resultado aparecerá aquí</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       EJ 8 — localStorage
+  ══════════════════════════════════════ -->
+  <div class="ex-card c-pink">
+    <div class="ex-head">
+      <span class="ex-num">08</span>
+      <span class="ex-title">Persistencia con <code>localStorage</code></span>
+      <span class="ex-topic">localStorage · JSON.stringify · JSON.parse</span>
+    </div>
+    <div class="ex-body">
+      <div class="tip">
+        💡 <strong>localStorage.setItem(key, value)</strong> solo guarda strings. Para arrays u objetos usa <strong>JSON.stringify()</strong> al guardar y <strong>JSON.parse()</strong> al leer. Los datos sobreviven al cerrar la pestaña. <strong>removeItem(key)</strong> los borra.
+      </div>
+      <p class="task">
+        Al cargar la página, lee las notas guardadas de <code>localStorage</code> y renderízalas en <code>#lista-8</code>. "Guardar" agrega la nota al array y actualiza localStorage + la lista. "Limpiar" borra con <code>removeItem</code>. Recarga la página para comprobar que persisten.
+      </p>
+      <div class="sandbox">
+        <div class="row">
+          <input type="text" id="input-8" placeholder="Escribe una nota..." style="flex:1">
+          <button class="btn btn-pink" id="btn-8-add">Guardar</button>
+          <button class="btn btn-danger" id="btn-8-clear">Limpiar</button>
+        </div>
+        <ul class="mini-list" id="lista-8"></ul>
+        <div class="out" id="salida-8">// operación localStorage aparecerá aquí</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       EJ 9 — addEventListener
+  ══════════════════════════════════════ -->
+  <div class="ex-card c-yellow">
+    <div class="ex-head">
+      <span class="ex-num">09</span>
+      <span class="ex-title">Escuchar eventos</span>
+      <span class="ex-topic">addEventListener · click · keydown · focus · blur</span>
+    </div>
+    <div class="ex-body">
+      <div class="tip">
+        💡 <strong>addEventListener("evento", fn)</strong> adjunta un listener sin borrar los existentes. El objeto <strong>e</strong> (event) tiene: <strong>e.key</strong> (tecla), <strong>e.target.value</strong> (valor del input), <strong>e.clientX/Y</strong> (posición). Un elemento puede tener múltiples listeners.
+      </div>
+      <p class="task">
+        Agrega listeners a <code>#input-9</code> y <code>#btn-9</code>. El log <code>#log-9</code> debe mostrar en tiempo real: qué tecla se presionó (<code>keydown</code>), cuándo el input gana/pierde foco (<code>focus</code>/<code>blur</code>), y cuántas veces se clicó el botón. "Limpiar" vacía el log.
+      </p>
+      <div class="sandbox">
+        <div class="row">
+          <input type="text" id="input-9" placeholder="Escribe aquí..." style="flex:1">
+          <button class="btn btn-yellow" id="btn-9">Clic aquí</button>
+        </div>
+        <div class="ev-log" id="log-9">// esperando eventos...</div>
+        <button class="btn btn-ghost" id="btn-9-clear" style="font-size:0.72rem;padding:0.35rem 0.8rem;align-self:flex-start;">Limpiar log</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       EJ 10 — mousemove en canvas
+  ══════════════════════════════════════ -->
+  <div class="ex-card c-green">
+    <div class="ex-head">
+      <span class="ex-num">10</span>
+      <span class="ex-title">Eventos de mouse sobre canvas</span>
+      <span class="ex-topic">mousemove · mousedown · mouseup · offsetX/Y</span>
+    </div>
+    <div class="ex-body">
+      <div class="tip">
+        💡 <strong>e.offsetX</strong> y <strong>e.offsetY</strong> dan las coordenadas relativas al elemento. Para dibujar necesitas: <strong>canvas.getContext("2d")</strong>, luego <strong>ctx.beginPath()</strong>, <strong>ctx.moveTo(x,y)</strong>, <strong>ctx.lineTo(x,y)</strong> y <strong>ctx.stroke()</strong>. Usa una variable booleana para saber si el mouse está presionado.
+      </div>
+      <p class="task">
+        Escucha <code>mousemove</code> en el canvas y muestra las coordenadas en <code>#salida-10</code>. Bonus: con <code>mousedown</code> + <code>mousemove</code> + <code>mouseup</code> implementa dibujo a mano libre. No olvides obtener el contexto 2D primero.
+      </p>
+      <div class="sandbox">
+        <canvas id="canvas-10"></canvas>
+        <div class="out" id="salida-10">// coordenadas del mouse aparecerán aquí</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       EJ 11 — DOM Traversal
+  ══════════════════════════════════════ -->
+  <div class="ex-card c-purple">
+    <div class="ex-head">
+      <span class="ex-num">11</span>
+      <span class="ex-title">Recorrido del DOM (traversal)</span>
+      <span class="ex-topic">parentNode · children · nextElementSibling · previousElementSibling</span>
+    </div>
+    <div class="ex-body">
+      <div class="tip">
+        💡 Desde cualquier nodo puedes navegar: <strong>parentNode</strong> sube al padre, <strong>children</strong> lista los hijos (HTMLCollection), <strong>firstElementChild / lastElementChild</strong> van al primero/último, <strong>nextElementSibling / previousElementSibling</strong> van al hermano.
+      </div>
+      <p class="task">
+        Agrega un listener <code>click</code> a cada <code>&lt;li&gt;</code>. Al hacer clic: quita la clase <code>resaltado</code> de todos, agrégasela al clicado, y muestra en <code>#salida-11</code> el <code>tagName</code> del padre, cuántos hijos tiene, y cuál es el hermano siguiente y anterior.
+      </p>
+      <div class="sandbox">
+        <ul id="lista-11" style="list-style:none;display:flex;flex-direction:column;gap:0.4rem;">
+          <li class="trav-node" id="li-a">🍎 Manzana</li>
+          <li class="trav-node" id="li-b">🍌 Banano</li>
+          <li class="trav-node" id="li-c">🍇 Uvas</li>
+          <li class="trav-node" id="li-d">🍓 Fresa</li>
+        </ul>
+        <div class="out" id="salida-11">// haz clic en un ítem para ver el traversal</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       EJ 12 — Drag & Drop
+  ══════════════════════════════════════ -->
+  <div class="ex-card c-pink">
+    <div class="ex-head">
+      <span class="ex-num">12</span>
+      <span class="ex-title">Drag &amp; Drop con eventos</span>
+      <span class="ex-topic">dragstart · dragover · drop · draggable</span>
+    </div>
+    <div class="ex-body">
+      <div class="tip">
+        💡 Tres eventos clave: <strong>dragstart</strong> — guarda el elemento arrastrado en una variable. <strong>dragover</strong> — llama <strong>e.preventDefault()</strong> para habilitar el drop. <strong>drop</strong> — mueve el elemento con <strong>zona.appendChild(draggedEl)</strong>. El atributo <strong>draggable="true"</strong> ya está en los chips.
+      </div>
+      <p class="task">
+        Implementa drag &amp; drop entre las dos zonas. Al soltar, el chip se mueve a la zona destino. Agrega la clase <code>arrastrando</code> al chip durante el arrastre, y <code>dragover-active</code> a la zona cuando algo pasa por encima. Muestra info en <code>#salida-12</code>.
+      </p>
+      <div class="sandbox">
+        <div class="drag-area">
+          <div style="flex:1">
+            <div class="lbl" style="margin-bottom:0.5rem">ZONA A</div>
+            <div class="dzone" id="dzona-a">
+              <div class="dchip" draggable="true">🎸 Rock</div>
+              <div class="dchip" draggable="true">🎹 Jazz</div>
+              <div class="dchip" draggable="true">🎷 Blues</div>
+            </div>
+          </div>
+          <div style="flex:1">
+            <div class="lbl" style="margin-bottom:0.5rem">ZONA B</div>
+            <div class="dzone" id="dzona-b">
+              <div class="dchip" draggable="true">🎤 Pop</div>
+              <div class="dchip" draggable="true">🥁 Reggae</div>
+            </div>
+          </div>
+        </div>
+        <div class="out" id="salida-12">// eventos de drag aparecerán aquí</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  // ════════════════════════════════════════════════════
+  //  EJ 1 — textContent
+  //  Tarea: al hacer clic en #btn-1, toma el valor de
+  //  #input-1 y ponlo en #salida-1 usando textContent.
+  //  Si el input está vacío, no hagas nada.
+  // ════════════════════════════════════════════════════
+
+    const btn1 = document.getElementById("btn-1");
+    const input1 = document.getElementById("input-1");
+    const salida1 = document.getElementById("salida-1");
+    btn1.addEventListener("click", () => {
+      salida1.textContent = input1.value.trim() !== ""   
+        ? `Hola, ${input1.value}! 👋`
+        : salida1.textContent;
+    })
+    
+
+  // ════════════════════════════════════════════════════
+  //  EJ 2 — innerHTML
+  //  Tarea: cada botón inyecta un HTML diferente en
+  //  #salida-2 usando innerHTML:
+  //   btn-2a → texto con <strong> y algún color inline
+  //   btn-2b → una <ul> con al menos tres <li>
+  //   btn-2c → un <span> con estilos de badge
+  // ════════════════════════════════════════════════════
+    const btn2a = document.getElementById("btn-2a")
+    const btn2b = document.getElementById("btn-2b")
+    const btn2c = document.getElementById("btn-2c")
+    const salida2 = document.getElementById("salida-2")
+
+    btn2a.addEventListener("click", () => {
+        salida2.innerHTML = `<strong style="color:var(--yellow)">¡El sol sale en Kuwait! ☀️</strong>`;
+    })
+
+    btn2b.addEventListener("click", () => {
+        salida2.innerHTML = `
+            <ul style="padding-left:1.2rem;color:var(--teal)">
+                <li>HTML</li>
+                <li>CSS</li>
+                <li>JavaScript</li>
+            </ul>
+        `;
+    })
+
+    btn2c.addEventListener("click", () => {
+        salida2.innerHTML = `<span style="background:var(--green);color:#09090f;padding:0.3rem 0.6rem;border-radius:4px;font-size:0.8rem;">¡Nuevo badge!</span>`;
+    })
+
+
+  // ════════════════════════════════════════════════════
+  //  EJ 3 — getElementById / querySelector
+  //  Tarea: al clic en #btn-3, lee el selector de
+  //  #input-3 y úsalo en querySelector. Muestra en
+  //  #salida-3: tagName, id y className del elemento.
+  //  Si no se encuentra, muestra un mensaje de error.
+  // ════════════════════════════════════════════════════
+    const btn3 = document.getElementById("btn-3")
+    const input3 = document.getElementById("input-3")
+    const salida3 = document.getElementById("salida-3")
+
+    btn3.addEventListener("click", () => {
+
+        const selector = input3.value     
+        const el = document.querySelector(selector)
+    
+    
+        if (el) {
+            salida3.textContent = `Elemento encontrado: <${el.tagName.toLowerCase()} id="${el.id}" class="${el.className}">`;
+        } else {
+            salida3.textContent = `No se encontró ningún elemento con el selector "${selector}".`;
+        }
+    })
+
+
+  // ════════════════════════════════════════════════════
+  //  EJ 4 — createElement + appendChild
+  //  Tarea:
+  //  → btn-4-add: crea un <li> con el texto del input
+  //    y añádelo a #lista-4 con appendChild.
+  //    Si el input está vacío, no hacer nada.
+  //  → btn-4-clear: vacía la lista con innerHTML = "".
+  // ════════════════════════════════════════════════════
+  const btn4Add = document.getElementById("btn-4-add")
+  const btn4Clear = document.getElementById("btn-4-clear")
+  const input4 = document.getElementById("input-4")
+  const lista4 = document.getElementById("lista-4")
+
+  btn4Add.addEventListener("click", () => {
+    const text = input4.value.trim()
+    if (text !== "") {
+      const li = document.createElement("li")
+      li.textContent = text
+      lista4.appendChild(li)
+      input4.value = ""
+    }
+  })
+
+  btn4Clear.addEventListener("click", () => {
+    lista4.innerHTML = ""
+  })
+  // ════════════════════════════════════════════════════
+  //  EJ 5 — classList
+  //  Tarea: cada botón aplica su método sobre #cls-box.
+  //  Muestra las clases actuales en #salida-5 con
+  //  el.className después de cada acción.
+  //   btn-5-add    → classList.add("activo")
+  //   btn-5-remove → classList.remove("activo")
+  //   btn-5-toggle → classList.toggle("activo")
+  //   btn-5-peligro→ classList.add("peligro")
+  //                  (y quita "activo" primero)
+  // ════════════════════════════════════════════════════
+  const clsBox = document.getElementById("cls-box")
+  const salida5 = document.getElementById("salida-5")
+  const btn5Add = document.getElementById("btn-5-add")
+  const btn5Remove = document.getElementById("btn-5-remove")
+  const btn5Toggle = document.getElementById("btn-5-toggle")
+  const btn5Peligro = document.getElementById("btn-5-peligro")
+
+  btn5Add.addEventListener("click", ()=> {
+    clsBox.classList.add("activo")
+    salida5.textContent = `Clases actuales: ${clsBox.className}`;
+  })
+    btn5Remove.addEventListener("click", ()=> {
+        clsBox.classList.remove("activo")
+        salida5.textContent = `Clases actuales: ${clsBox.className}`;
+    })
+    btn5Toggle.addEventListener("click", ()=> {
+        clsBox.classList.toggle("activo")
+        salida5.textContent = `Clases actuales: ${clsBox.className}`;
+    })
+    btn5Peligro.addEventListener("click", ()=> {
+        clsBox.classList.remove("activo")
+        clsBox.classList.add("peligro")
+        salida5.textContent = `Clases actuales: ${clsBox.className}`;
+    })
+
+
+  // ════════════════════════════════════════════════════
+  //  EJ 6 — element.style
+  //  Tarea: escucha el evento "change" en los tres
+  //  <select>. Cada cambio aplica el valor seleccionado
+  //  a #estilo-box con element.style.
+  //   #sel-color  → style.backgroundColor
+  //   #sel-size   → style.fontSize
+  //   #sel-radius → style.borderRadius
+  //  Muestra el código ejecutado en #salida-6.
+  // ════════════════════════════════════════════════════
+    const selColor = document.getElementById("sel-color")
+    const selSize = document.getElementById("sel-size")
+    const selRadius = document.getElementById("sel-radius")
+    const estiloBox = document.getElementById("estilo-box")
+    const salida6  = document.getElementById("salida-6")
+
+    selColor.addEventListener("change", () => {})
+
+
+  // ════════════════════════════════════════════════════
+  //  EJ 7 — getAttribute / setAttribute
+  //  Tarea:
+  //  → btn-7-read: lee el placeholder de #input-7
+  //    con getAttribute y muéstralo en #salida-7.
+  //  → btn-7-set: cámbialo con setAttribute.
+  //  → btn-7-type: alterna entre type="text" y
+  //    type="password" con setAttribute.
+  // ════════════════════════════════════════════════════
+
+
+
+  // ════════════════════════════════════════════════════
+  //  EJ 8 — localStorage
+  //  Tarea:
+  //  → Al cargar: lee las notas de localStorage con
+  //    getItem + JSON.parse y renderiza en #lista-8.
+  //  → btn-8-add: agrega la nota al array, guarda con
+  //    setItem + JSON.stringify, actualiza la lista.
+  //  → btn-8-clear: borra con removeItem y limpia lista.
+  //  Muestra la operación en #salida-8.
+  // ════════════════════════════════════════════════════
+
+
+
+  // ════════════════════════════════════════════════════
+  //  EJ 9 — addEventListener
+  //  Tarea: agrega estos listeners:
+  //  → #input-9: keydown (muestra e.key),
+  //              focus (log "focus"),
+  //              blur  (log "blur")
+  //  → #btn-9: click con contador de clics
+  //  → #btn-9-clear: limpia #log-9
+  //  Cada entrada en el log debe tener la hora actual.
+  // ════════════════════════════════════════════════════
+
+
+
+  // ════════════════════════════════════════════════════
+  //  EJ 10 — mousemove + canvas
+  //  Tarea:
+  //  → Obtén el canvas con getElementById("canvas-10")
+  //    y el contexto: canvas.getContext("2d").
+  //  → mousemove: muestra offsetX y offsetY en #salida-10.
+  //  → Bonus: mousedown inicia dibujo, mousemove traza
+  //    la línea, mouseup lo detiene.
+  // ════════════════════════════════════════════════════
+
+
+
+  // ════════════════════════════════════════════════════
+  //  EJ 11 — DOM Traversal
+  //  Tarea: agrega un click listener a cada <li> de
+  //  #lista-11. Al hacer clic:
+  //  1. Quita la clase "resaltado" de todos los li.
+  //  2. Agrégasela al li clicado.
+  //  3. Muestra en #salida-11:
+  //     - parentNode.tagName
+  //     - parentNode.children.length
+  //     - nextElementSibling (texto o "ninguno")
+  //     - previousElementSibling (texto o "ninguno")
+  // ════════════════════════════════════════════════════
+
+
+
+  // ════════════════════════════════════════════════════
+  //  EJ 12 — Drag & Drop
+  //  Tarea:
+  //  → dragstart en .dchip: guarda el elemento en una
+  //    variable, agrégale la clase "arrastrando".
+  //  → dragover en .dzone: e.preventDefault() y agrega
+  //    "dragover-active" a la zona.
+  //  → dragleave en .dzone: quita "dragover-active".
+  //  → drop en .dzone: mueve el chip con appendChild,
+  //    limpia las clases, muestra info en #salida-12.
+  //  → dragend en documento: limpia "arrastrando".
+  // ════════════════════════════════════════════════════
+</script>
+</body>
+</html>

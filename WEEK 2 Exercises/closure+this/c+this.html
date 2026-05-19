@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ejercicio 5 — Closure + This + Callbacks</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #F9FAFC; color: #181E4B; }
+
+    header { background: #6B5CFF; color: #fff; padding: 1.5rem 2rem; }
+    header h1 { font-size: 1.5rem; }
+    header p  { font-size: 0.9rem; opacity: 0.85; margin-top: 0.3rem; }
+
+    .contenedor { max-width: 820px; margin: 2rem auto; padding: 0 1.5rem 3rem; }
+
+    .teoria { background: #fff; border-left: 5px solid #6B5CFF; border-radius: 10px; padding: 1.4rem 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .teoria h2 { color: #6B5CFF; font-size: 1rem; margin-bottom: 0.6rem; }
+    .teoria p  { font-size: 0.92rem; line-height: 1.75; color: #444; margin-bottom: 0.5rem; }
+
+    pre { background: #181E4B; color: #A5B4FC; padding: 1rem 1.2rem; border-radius: 8px; font-size: 0.82rem; line-height: 1.75; overflow-x: auto; margin: 0.8rem 0; white-space: pre; }
+
+    .ejercicio { background: #fff; border-radius: 10px; padding: 1.4rem 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .ejercicio h3 { font-size: 0.98rem; margin-bottom: 0.6rem; padding-bottom: 0.5rem; border-bottom: 2px solid #ECF0F6; }
+    .ejercicio p  { font-size: 0.85rem; color: #666; margin-bottom: 0.8rem; line-height: 1.6; }
+
+    .pasos { margin-bottom: 1rem; }
+    .paso { display: flex; gap: 0.8rem; align-items: flex-start; padding: 0.65rem 0.9rem; border-radius: 8px; border: 2px solid #ECF0F6; margin-bottom: 0.5rem; font-size: 0.85rem; transition: border 0.2s; }
+    .paso:hover { border-color: #6B5CFF; }
+    .paso-num { background: #6B5CFF; color: #fff; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 700; flex-shrink: 0; }
+    .paso-txt { color: #444; line-height: 1.6; }
+    .paso-txt code { background: #EDE9FF; color: #6B5CFF; padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.8rem; }
+    .paso-txt strong { color: #181E4B; }
+
+    label { display: block; font-size: 0.83rem; font-weight: 600; color: #6B5CFF; margin-bottom: 0.3rem; }
+    input, select { width: 100%; padding: 0.6rem 0.9rem; border: 2px solid #ECF0F6; border-radius: 8px; font-size: 0.92rem; margin-bottom: 0.9rem; outline: none; transition: border 0.2s; }
+    input:focus, select:focus { border-color: #6B5CFF; }
+
+    .fila { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .btn { background: #6B5CFF; color: #fff; border: none; padding: 0.6rem 1.4rem; border-radius: 8px; font-size: 0.92rem; cursor: pointer; transition: background 0.2s; margin-right: 8px; margin-bottom: 6px; }
+    .btn:hover { background: #5546E8; }
+    .btn-outline { background: transparent; color: #6B5CFF; border: 2px solid #6B5CFF; }
+    .btn-outline:hover { background: #EDE9FF; }
+    .btn-danger { background: #FE654F; } .btn-danger:hover { background: #e0452f; }
+
+    .resultado { margin-top: 1rem; padding: 1rem; border-radius: 8px; font-size: 0.9rem; display: none; line-height: 1.7; }
+    .resultado.visible { display: block; }
+    .resultado.ok      { background: #D1FAF0; border-left: 4px solid #5ACCA4; color: #065F46; }
+    .resultado.error   { background: #FFE8E4; border-left: 4px solid #FE654F; color: #7F1D1D; }
+    .resultado.info    { background: #EDE9FF; border-left: 4px solid #6B5CFF; color: #3B2FAA; }
+    .resultado pre     { background: #181E4B; color: #A5B4FC; border-radius: 6px; padding: 0.7rem 1rem; font-size: 0.79rem; margin-top: 0.5rem; }
+
+    .calc-panel { background: #F9FAFC; border: 2px solid #ECF0F6; border-radius: 10px; padding: 1.2rem; margin: 0.8rem 0; }
+    .calc-display { background: #181E4B; color: #A5B4FC; border-radius: 8px; padding: 0.8rem 1.1rem; font-family: 'Courier New', monospace; font-size: 1.6rem; font-weight: 700; text-align: right; margin-bottom: 0.8rem; min-height: 56px; letter-spacing: 0.05em; transition: color 0.3s; }
+    .calc-display.nuevo { color: #86EFAC; }
+    .calc-historial { background: #181E4B; color: #6B7280; border-radius: 8px; padding: 0.7rem 1rem; font-family: 'Courier New', monospace; font-size: 0.8rem; max-height: 120px; overflow-y: auto; margin-bottom: 0.8rem; line-height: 1.9; }
+    .calc-historial .entrada { color: #A5B4FC; }
+    .calc-historial:empty::before { content: "Sin operaciones aún..."; color: #4B5563; }
+
+    .tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.7rem; }
+    .tag  { padding: 0.2rem 0.7rem; border-radius: 99px; font-size: 0.72rem; font-weight: 700; }
+    .tag-closure  { background: #EDE9FF; color: #6B5CFF; }
+    .tag-callback { background: #D1FAF0; color: #065F46; }
+    .tag-this     { background: #FEF3C7; color: #92400E; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Ejercicio 5 — Closure + This + Callbacks</h1>
+  <p>Calculadora con historial privado · Lección 2</p>
+</header>
+
+<div class="contenedor">
+
+  <div class="teoria">
+    <h2>Recuerda: los 3 conceptos combinados</h2>
+    <p>Este ejercicio los une todos. Repasa la idea central de cada uno antes de empezar.</p>
+    <pre>
+// CLOSURE: variable privada que solo los métodos retornados pueden ver
+function crearAlgo() {
+  const _privado = []; // nadie fuera puede acceder aquí
+
+  return {
+    agregar(dato, callback) {
+      _privado.push(dato);       // closure: accede a _privado
+      if (typeof callback === "function") callback(dato); // callback
+    },
+    leer() {
+      return [..._privado];      // closure: retorna copia con spread
+    },
+    total() {
+      return this.leer().length; // this: llama al método del objeto
+    },
+  };
+}</pre>
+  </div>
+
+  <!-- MÉTODO operar -->
+  <div class="ejercicio">
+    <h3>🧪 Parte A — Completa operar(a, op, b, alCalcular)</h3>
+    <div class="tags">
+      <span class="tag tag-closure">Closure</span>
+      <span class="tag tag-callback">Callback</span>
+    </div>
+
+    <div class="pasos">
+      <div class="paso">
+        <div class="paso-num">1</div>
+        <div class="paso-txt">Declara <code>let resultado</code> y usa un <code>switch(op)</code> con los casos <code>"+"</code>, <code>"-"</code>, <code>"*"</code>, <code>"/"</code> para calcular el resultado.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">2</div>
+        <div class="paso-txt">Guarda en <code>_historial</code> (CLOSURE) un objeto con: <code>{ expresion: `${a} ${op} ${b}`, resultado, operacion: op }</code>.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">3</div>
+        <div class="paso-txt">Verifica con <code>typeof alCalcular === "function"</code> y luego llama al CALLBACK con el resultado: <code>alCalcular(resultado)</code>.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">4</div>
+        <div class="paso-txt">Retorna el resultado al final.</div>
+      </div>
+    </div>
+
+    <pre>
+function crearCalculadora() {
+
+  // CLOSURE — _historial es privado, no accesible desde fuera
+  const _historial = [];
+
+  return {
+
+    operar(a, op, b, alCalcular) {
+      // Paso 1: calcula con switch
+      let resultado;
+      switch (op) {
+        case "+": /* resultado = */ break;
+        case "-": /* resultado = */ break;
+        case "*": /* resultado = */ break;
+        case "/": /* resultado = */ break;
+      }
+
+      // Paso 2: guarda en _historial (CLOSURE)
+      _historial.push( /* objeto con expresion, resultado, operacion */ );
+
+      // Paso 3: ejecuta el callback si existe
+      if ( /* typeof alCalcular === ... */ ) {
+        /* alCalcular(resultado) */;
+      }
+
+      // Paso 4: retorna el resultado
+      return resultado;
+    },</pre>
+  </div>
+
+  <!-- MÉTODO obtenerHistorial -->
+  <div class="ejercicio">
+    <h3>🧪 Parte B — Completa obtenerHistorial()</h3>
+    <div class="tags">
+      <span class="tag tag-closure">Closure</span>
+    </div>
+
+    <div class="pasos">
+      <div class="paso">
+        <div class="paso-num">1</div>
+        <div class="paso-txt">Retorna una <strong>copia</strong> del array <code>_historial</code> usando el spread operator: <code>[..._historial]</code>. Nunca retornes el array directamente — si lo haces, el código externo podría mutarlo.</div>
+      </div>
+    </div>
+
+    <pre>
+    obtenerHistorial() {
+      // Retorna una COPIA del historial privado — usa spread [...array]
+      return /* [..._historial] */;
+    },</pre>
+  </div>
+
+  <!-- MÉTODO estadisticas -->
+  <div class="ejercicio">
+    <h3>🧪 Parte C — Completa estadisticas()</h3>
+    <div class="tags">
+      <span class="tag tag-this">This</span>
+      <span class="tag tag-callback">Callbacks</span>
+    </div>
+
+    <div class="pasos">
+      <div class="paso">
+        <div class="paso-num">1</div>
+        <div class="paso-txt">Llama a <code>this.obtenerHistorial()</code> — usa <code>this</code> para llamar al método del mismo objeto.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">2</div>
+        <div class="paso-txt">Si el historial está vacío (<code>!hist.length</code>), retorna <code>null</code>.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">3</div>
+        <div class="paso-txt">Usa <code>reduce</code> para encontrar la operación con mayor resultado. El callback compara <code>op.resultado</code> con el acumulador.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">4</div>
+        <div class="paso-txt">Retorna un objeto con <code>totalOps</code>, <code>mayor</code> y lo que quieras incluir.</div>
+      </div>
+    </div>
+
+    <pre>
+    estadisticas() {
+      // Paso 1: obtén el historial con this (llama al método del objeto)
+      const hist = /* this.obtenerHistorial() */;
+
+      // Paso 2: si está vacío, retorna null
+      if ( /* !hist.length */ ) return null;
+
+      // Paso 3: usa reduce para encontrar la operación con mayor resultado
+      const mayor = hist.reduce( /* callback que compare op.resultado */ );
+
+      // Paso 4: retorna el resumen
+      return { totalOps: hist.length, mayor };
+    },
+
+    limpiar() {
+      _historial.length = 0; // ya implementado
+    },
+  };
+}</pre>
+  </div>
+
+  <!-- ÁREA DE PRUEBA -->
+  <div class="ejercicio">
+    <h3>▶ Prueba tu solución aquí</h3>
+
+    <div class="calc-panel">
+      <div class="calc-display"   id="calcDisplay">0</div>
+      <div class="calc-historial" id="calcHistorial"></div>
+
+      <div class="fila">
+        <div>
+          <label for="calcA">Número A</label>
+          <input type="number" id="calcA" placeholder="Ej: 10" />
+        </div>
+        <div>
+          <label for="calcB">Número B</label>
+          <input type="number" id="calcB" placeholder="Ej: 3" />
+        </div>
+      </div>
+
+      <label for="calcOp">Operación</label>
+      <select id="calcOp">
+        <option value="+">+ Sumar</option>
+        <option value="-">− Restar</option>
+        <option value="*">× Multiplicar</option>
+        <option value="/">÷ Dividir</option>
+      </select>
+    </div>
+
+    <button class="btn" onclick="calcular()">▶ Calcular</button>
+    <button class="btn btn-outline" onclick="verEstadisticas()">📊 Estadísticas</button>
+    <button class="btn btn-danger" onclick="limpiarCalc()">Limpiar</button>
+
+    <div class="resultado" id="resultado"></div>
+  </div>
+
+</div>
+
+<script src="/WEEK 2 Exercises/closure+this/c+this.js"></script>
+</body>
+</html>
+practica_ej5_closure_this_callbacks.html
+17 KB

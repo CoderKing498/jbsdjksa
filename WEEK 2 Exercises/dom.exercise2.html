@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ejercicio 3 — DOM: Lista de tareas</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #F9FAFC; color: #181E4B; }
+
+    header { background: #6B5CFF; color: #fff; padding: 1.5rem 2rem; }
+    header h1 { font-size: 1.5rem; }
+    header p  { font-size: 0.9rem; opacity: 0.85; margin-top: 0.3rem; }
+
+    .contenedor { max-width: 820px; margin: 2rem auto; padding: 0 1.5rem 3rem; }
+
+    .teoria { background: #fff; border-left: 5px solid #6B5CFF; border-radius: 10px; padding: 1.4rem 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .teoria h2 { color: #6B5CFF; font-size: 1rem; margin-bottom: 0.6rem; }
+    .teoria p  { font-size: 0.92rem; line-height: 1.75; color: #444; margin-bottom: 0.5rem; }
+
+    pre { background: #181E4B; color: #A5B4FC; padding: 1rem 1.2rem; border-radius: 8px; font-size: 0.82rem; line-height: 1.75; overflow-x: auto; margin: 0.8rem 0; white-space: pre; }
+
+    .ejercicio { background: #fff; border-radius: 10px; padding: 1.4rem 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .ejercicio h3 { font-size: 0.98rem; margin-bottom: 0.6rem; padding-bottom: 0.5rem; border-bottom: 2px solid #ECF0F6; }
+    .ejercicio p  { font-size: 0.85rem; color: #666; margin-bottom: 0.8rem; line-height: 1.6; }
+
+    .pasos { margin-bottom: 1rem; }
+    .paso { display: flex; gap: 0.8rem; align-items: flex-start; padding: 0.65rem 0.9rem; border-radius: 8px; border: 2px solid #ECF0F6; margin-bottom: 0.5rem; font-size: 0.85rem; transition: border 0.2s; }
+    .paso:hover { border-color: #6B5CFF; }
+    .paso-num { background: #6B5CFF; color: #fff; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 700; flex-shrink: 0; }
+    .paso-txt { color: #444; line-height: 1.6; }
+    .paso-txt code { background: #EDE9FF; color: #6B5CFF; padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.8rem; }
+    .paso-txt strong { color: #181E4B; }
+
+    label { display: block; font-size: 0.83rem; font-weight: 600; color: #6B5CFF; margin-bottom: 0.3rem; }
+    input { width: 100%; padding: 0.6rem 0.9rem; border: 2px solid #ECF0F6; border-radius: 8px; font-size: 0.92rem; margin-bottom: 0.9rem; outline: none; transition: border 0.2s; }
+    input:focus { border-color: #6B5CFF; }
+
+    .btn { background: #6B5CFF; color: #fff; border: none; padding: 0.6rem 1.4rem; border-radius: 8px; font-size: 0.92rem; cursor: pointer; transition: background 0.2s; margin-right: 8px; margin-bottom: 6px; }
+    .btn:hover { background: #5546E8; }
+    .btn-danger { background: #FE654F; } .btn-danger:hover { background: #e0452f; }
+
+    .resultado { margin-top: 1rem; padding: 1rem; border-radius: 8px; font-size: 0.9rem; display: none; line-height: 1.7; }
+    .resultado.visible { display: block; }
+    .resultado.ok      { background: #D1FAF0; border-left: 4px solid #5ACCA4; color: #065F46; }
+    .resultado.error   { background: #FFE8E4; border-left: 4px solid #FE654F; color: #7F1D1D; }
+    .resultado pre     { background: #181E4B; color: #A5B4FC; border-radius: 6px; padding: 0.7rem 1rem; font-size: 0.79rem; margin-top: 0.5rem; }
+
+    /* Área de tareas */
+    .lista-tareas { margin: 0.8rem 0; min-height: 60px; }
+    .tarea-item { display: flex; justify-content: space-between; align-items: center; padding: 0.65rem 1rem; border-radius: 8px; border: 2px solid #ECF0F6; margin-bottom: 0.5rem; font-size: 0.9rem; transition: all 0.25s; }
+    .tarea-item:hover { border-color: #6B5CFF; }
+    .tarea-item.hecha { background: #D1FAF0; border-color: #5ACCA4; color: #065F46; }
+    .tarea-item.hecha .tarea-texto { text-decoration: line-through; }
+    .tarea-acciones { display: flex; gap: 0.4rem; }
+    .tarea-acciones button { background: #EDE9FF; color: #6B5CFF; border: none; padding: 4px 10px; border-radius: 5px; cursor: pointer; font-size: 0.78rem; transition: background 0.15s; }
+    .tarea-acciones button:hover { background: #6B5CFF; color: #fff; }
+    .tarea-acciones .btn-elim { background: #FFE8E4; color: #FE654F; }
+    .tarea-acciones .btn-elim:hover { background: #FE654F; color: #fff; }
+
+    .contadores { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.8rem; }
+    .contador-chip { background: #F9FAFC; border: 2px solid #ECF0F6; border-radius: 8px; padding: 0.4rem 0.9rem; font-size: 0.82rem; }
+    .contador-chip span { font-weight: 700; color: #6B5CFF; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Ejercicio 3 — Manipulación del DOM</h1>
+  <p>Lista de tareas interactiva · Lección 2</p>
+</header>
+
+<div class="contenedor">
+
+  <div class="teoria">
+    <h2>Recuerda: métodos del DOM que necesitarás</h2>
+    <p>Para este ejercicio usarás estos 5 métodos. Léelos antes de empezar.</p>
+    <pre>
+// 1. Obtener un elemento por su id
+const elemento = document.getElementById("miId");
+
+// 2. Leer el texto de un input
+const texto = document.getElementById("miInput").value.trim();
+
+// 3. Crear un elemento nuevo (no está en la página todavía)
+const div = document.createElement("div");
+div.className = "mi-clase";
+div.innerHTML = `&lt;span&gt;contenido&lt;/span&gt;`;
+
+// 4. Agregar el elemento al DOM (ahora sí aparece en la página)
+document.getElementById("contenedor").appendChild(div);
+
+// 5. Alternar una clase CSS (agrega si no la tiene, quita si ya la tiene)
+elemento.classList.toggle("activo");
+
+// EXTRA: subir al ancestro más cercano con esa clase
+const tarjeta = boton.closest(".tarea-item");</pre>
+  </div>
+
+  <!-- EJERCICIO agregarTarea -->
+  <div class="ejercicio">
+    <h3>🧪 Parte A — Completa agregarTarea()</h3>
+    <p>Esta función se llama cuando el usuario presiona el botón "+ Agregar". Debes construirla paso a paso.</p>
+
+    <div class="pasos">
+      <div class="paso">
+        <div class="paso-num">1</div>
+        <div class="paso-txt">Lee el valor del input con id <code>"inputTarea"</code>. Usa <code>.value.trim()</code> para quitar espacios.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">2</div>
+        <div class="paso-txt">Si el texto está vacío (<code>!texto</code>), usa <code>return</code> para salir sin hacer nada.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">3</div>
+        <div class="paso-txt">Crea un <code>div</code> con <code>document.createElement("div")</code> y asígnale <code>className = "tarea-item"</code>.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">4</div>
+        <div class="paso-txt">Define el HTML interno con <code>div.innerHTML = `...`</code>. Incluye el texto y dos botones: uno llama <code>marcarHecha(this)</code> y otro llama <code>eliminarTarea(this)</code>.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">5</div>
+        <div class="paso-txt">Agrega el div al contenedor con id <code>"listaTareas"</code> usando <code>appendChild(div)</code>.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">6</div>
+        <div class="paso-txt">Limpia el input asignando <code>""</code> a su <code>.value</code> y llama a <code>actualizarContadores()</code>.</div>
+      </div>
+    </div>
+
+    <pre>
+function agregarTarea() {
+  // Paso 1: Lee el input con id "inputTarea"
+  const texto = /* document.getElementById(...)... */;
+
+  // Paso 2: Si está vacío, sal con return
+  if ( /* condición */ ) return;
+
+  // Paso 3: Crea el div
+  const div = /* document.createElement(...) */;
+  div.className = "tarea-item";
+
+  // Paso 4: Define el HTML interno
+  div.innerHTML = `
+    &lt;span class="tarea-texto"&gt;${texto}&lt;/span&gt;
+    &lt;div class="tarea-acciones"&gt;
+      &lt;button onclick="marcarHecha(this)"&gt;✓ Hecho&lt;/button&gt;
+      &lt;button class="btn-elim" onclick="eliminarTarea(this)"&gt;✕&lt;/button&gt;
+    &lt;/div&gt;
+  `;
+
+  // Paso 5: Agrega al contenedor con id "listaTareas"
+  document.getElementById( /* id */ )./* método */(div);
+
+  // Paso 6: Limpia el input y actualiza contadores
+  document.getElementById("inputTarea").value = "";
+  actualizarContadores();
+}</pre>
+  </div>
+
+  <!-- EJERCICIO marcarHecha -->
+  <div class="ejercicio">
+    <h3>🧪 Parte B — Completa marcarHecha(btn)</h3>
+    <p>Esta función recibe el botón presionado y debe alternar la clase <code>hecha</code> en la tarjeta.</p>
+
+    <div class="pasos">
+      <div class="paso">
+        <div class="paso-num">1</div>
+        <div class="paso-txt">Usa <code>btn.closest(".tarea-item")</code> para subir desde el botón hasta la tarjeta que lo contiene.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">2</div>
+        <div class="paso-txt">Llama a <code>tarjeta.classList.toggle("hecha")</code>. Si la tarjeta no tiene la clase, la agrega; si ya la tiene, la quita.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">3</div>
+        <div class="paso-txt">Llama a <code>actualizarContadores()</code> para que los números se actualicen.</div>
+      </div>
+    </div>
+
+    <pre>
+function marcarHecha(btn) {
+  // Paso 1: Sube al ancestro con clase "tarea-item"
+  const tarjeta = /* btn.closest(...) */;
+
+  // Paso 2: Alterna la clase "hecha"
+  tarjeta.classList./* método */( /* clase */ );
+
+  // Paso 3: Actualiza los contadores
+  actualizarContadores();
+}</pre>
+  </div>
+
+  <!-- ÁREA DE PRUEBA -->
+  <div class="ejercicio">
+    <h3>▶ Prueba tu solución aquí</h3>
+    <label for="inputTarea">Nueva tarea</label>
+    <input type="text" id="inputTarea" placeholder="Ej: Estudiar closures" />
+
+    <button class="btn" onclick="agregarTarea()">+ Agregar tarea</button>
+    <button class="btn btn-danger" onclick="limpiarTodo()">Limpiar todo</button>
+
+    <div class="contadores">
+      <div class="contador-chip">Total: <span id="ctTotal">0</span></div>
+      <div class="contador-chip">Pendientes: <span id="ctPend">0</span></div>
+      <div class="contador-chip">Hechas: <span id="ctHechas">0</span></div>
+    </div>
+
+    <div class="lista-tareas" id="listaTareas"></div>
+    <div class="resultado" id="resultado"></div>
+  </div>
+
+</div>
+
+<script>
+
+  // ════════════════════════════════════════════════════════
+  //  ZONA DEL ESTUDIANTE — completa estas dos funciones
+  // ════════════════════════════════════════════════════════
+
+  function agregarTarea() {
+    // ✏️ Escribe tu código aquí — sigue los 6 pasos del ejercicio
+    const texto = document.getElementById("inputTarea").value.trim();
+    
+    if(!texto) return
+    
+    const div = document.createElement("div")
+    className = "tarea-item"
+
+    div.innerHTML =  `
+    <span class="tarea-texto">${texto}</span>
+    <div class="tarea-acciones">
+        <button onclick="marcarHecha(this)">Hecho</button>
+        <button class="btn-elim" onclick="eliminarTarea(this)">X</button>
+    </div>
+    `;
+    
+    document.getElementById("listaTareas").appendChild(div);
+
+    document.getElementById("inputTarea").value = "";
+    actualizarContadores();
+  }
+
+  function marcarHecha(btn) {
+    // ✏️ Escribe tu código aquí — sigue los 3 pasos del ejercicio
+    const tarjeta = btn.closest(".tarea-item");
+    tarjet.classList.toggle("hecha");
+    actualizarContadores();
+  }
+
+  // ════════════════════════════════════════════════════════
+  //  NO MODIFIQUES LO QUE ESTÁ ABAJO
+  // ════════════════════════════════════════════════════════
+
+  // eliminarTarea ya está implementada — solo necesitas completar las de arriba
+  function eliminarTarea(btn) {
+    btn.closest(".tarea-item").remove();
+    actualizarContadores();
+  }
+
+  function actualizarContadores() {
+    const todas  = document.querySelectorAll(".tarea-item");
+    const hechas = document.querySelectorAll(".tarea-item.hecha");
+    document.getElementById("ctTotal").textContent  = todas.length;
+    document.getElementById("ctPend").textContent   = todas.length - hechas.length;
+    document.getElementById("ctHechas").textContent = hechas.length;
+
+    const caja = document.getElementById("resultado");
+    if (todas.length > 0) {
+      caja.innerHTML = `✅ Lista activa: <strong>${todas.length}</strong> tarea(s) · <strong>${hechas.length}</strong> hecha(s).`;
+      caja.className = "resultado visible ok";
+    }
+  }
+
+  function limpiarTodo() {
+    document.getElementById("listaTareas").innerHTML = "";
+    document.getElementById("resultado").className  = "resultado";
+    actualizarContadores();
+  }
+
+</script>
+</body>
+</html>

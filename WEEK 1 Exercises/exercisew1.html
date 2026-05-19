@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Variables</title>
+    <script src="semana1.js"></script>
+    <style>
+    /* ── Reset y base ── */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #F9FAFC; color: #181E4B; }
+
+    /* ── Cabecera ── */
+    header { background: #6B5CFF; color: #fff; padding: 1.5rem 2rem; }
+    header h1 { font-size: 1.5rem; }
+    header p  { font-size: 0.9rem; opacity: 0.85; margin-top: 0.3rem; }
+
+    /* ── Contenedor central ── */
+    .contenedor { max-width: 820px; margin: 2rem auto; padding: 0 1.5rem; }
+
+    /* ── Tarjeta de teoría ── */
+    .teoria {
+      background: #fff;
+      border-left: 5px solid #6B5CFF;
+      border-radius: 10px;
+      padding: 1.4rem 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .teoria h2 { color: #6B5CFF; font-size: 1.05rem; margin-bottom: 0.7rem; }
+    .teoria p  { font-size: 0.92rem; line-height: 1.75; color: #444; margin-bottom: 0.5rem; }
+
+    /* ── Bloque de código explicativo ── */
+    pre {
+      background: #181E4B;
+      color: #A5B4FC;
+      padding: 1rem 1.2rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      line-height: 1.75;
+      overflow-x: auto;
+      margin: 0.8rem 0;
+    }
+
+    /* ── Tarjeta de ejercicio ── */
+    .ejercicio {
+      background: #fff;
+      border-radius: 10px;
+      padding: 1.4rem 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .ejercicio h3 {
+      font-size: 0.98rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #ECF0F6;
+    }
+    label {
+      display: block;
+      font-size: 0.83rem;
+      font-weight: 600;
+      color: #6B5CFF;
+      margin-bottom: 0.3rem;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.6rem 0.9rem;
+      border: 2px solid #ECF0F6;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      margin-bottom: 0.9rem;
+      outline: none;
+      transition: border 0.2s;
+    }
+    input:focus, select:focus { border-color: #6B5CFF; }
+
+    /* ── Botón principal ── */
+    .btn {
+      background: #6B5CFF;
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1.4rem;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #5546E8; }
+
+    /* ── Caja de resultado ── */
+    .resultado {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      min-height: 48px;
+      display: none;           /* oculto por defecto */
+    }
+    .resultado.visible { display: block; }
+    .resultado.ok      { background: #D1FAF0; border-left: 4px solid #5ACCA4; color: #065F46; }
+    .resultado.info    { background: #EDE9FF; border-left: 4px solid #6B5CFF; color: #3B2FAA; }
+    .resultado.error   { background: #FFE8E4; border-left: 4px solid #FE654F; color: #7F1D1D; }
+
+    /* ── Badge de tipo de dato ── */
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin: 3px 4px 3px 0;
+    }
+    .badge-string    { background: #EDE9FF; color: #6B5CFF; }
+    .badge-number    { background: #FEF3C7; color: #92400E; }
+    .badge-boolean   { background: #D1FAF0; color: #065F46; }
+    .badge-undefined { background: #F3F4F6; color: #6B7280; }
+    .badge-null      { background: #FFE8E4; color: #991B1B; }
+  </style>
+</head>
+<body>
+    <header>
+        <h1>Variables y Tipos de datos</h1>
+        <p>Week 1 JavaScript</p>
+    </header>
+    
+    <div class="contenedor">
+        <div class="teoria">
+            <h2>DOM</h2>
+            <p>El <strong>DOM</strong> (Document Object Model) es la representación
+      del HTML como objetos que JavaScript puede leer y modificar en tiempo real.
+      Con JS seleccionamos elementos y les asignamos valores usando <strong>variables</strong>
+      </p>
+      <pre>
+// ── Seleccionamos el elemento por su id ──────────────────
+// document.getElementById devuelve el elemento HTML como objeto
+const titulo = document.getElementById("miTitulo");
+
+// ── Declaramos variables con distintos tipos ─────────────
+const nombre = "Ana";      // String  — texto entre comillas
+const edad   = 20;         // Number  — número sin comillas
+const activo = true;       // Boolean — solo true o false
+
+// ── Usamos las variables para modificar el DOM ───────────
+// .textContent cambia el texto visible del elemento
+titulo.textContent = "Hola, " + nombre + ". Tienes " + edad + " años.";
+
+// ── Template literal (forma moderna con backticks) ───────
+titulo.textContent = `Hola, ${nombre}. Tienes ${edad} años.`;</pre>
+        </div>
+
+       <div class="ejercicio">
+        <h3>Variables</h3>
+
+        <label for="inputName">Your Name (String)</label>
+        <input type="text" id="inputName" placeholder="Write your name">
+
+        <label for="inputAge">Your Age (Number)</label>
+        <input type="number" id="inputAge" placeholder="Write your age">
+
+        <button class="btn" onclick="mostrarPresentacion()">Show DOM</button>
+
+        <div class="resultado" id="resultadoPresentacion"></div>
+       </div>
+
+       <div class="ejercicio">
+        <h3>Tipo de Dato</h3>
+        <label for="inputValor">Escribe cualquier valor</label>
+        <input type="text" id="inputValue" placeholder='Ej: 45, "kiricocho", false'>
+
+        <button class="btn" onclick="detectarTipo()">Detect</button>
+
+        <div class="resultado" id="resultadoTipo"></div>
+       </div>
+
+       <div class="ejercicio">
+    <h3>Calculadora de precio con descuento</h3>
+    <p style="font-size:0.85rem;color:#666;margin-bottom:1rem;">
+      Aplica variables de tipo Number para calcular descuentos.
+    </p>
+
+    <label for="inputPrecio">Precio original ($)</label>
+    <input type="number" id="inputPrecio" placeholder="Ej: 50000" />
+
+    <label for="inputDescuento">Descuento (%)</label>
+    <input type="number" id="inputDescuento" placeholder="Ej: 15" />
+
+    <button class="btn" onclick="calcularDescuento()">Calcular</button>
+
+    <div class="resultado" id="resultadoDescuento"></div>
+  </div>
+
+</div>
+    </div>
+
+
+</body>
+</html>

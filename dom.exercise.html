@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ejercicio 1 — Tarjeta de Presentación</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --ink: #0d0d0d;
+        --paper: #f5f0e8;
+        --accent: #e84545;
+        --mid: #6b6b6b;
+        --border: #d8d1c4;
+        --card-bg: #ffffff;
+      }
+
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--paper);
+        color: var(--ink);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2.5rem 1.5rem;
+      }
+
+      /* ── Cabecera editorial ── */
+      .header {
+        width: 100%;
+        max-width: 700px;
+        border-top: 3px solid var(--ink);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 0;
+        margin-bottom: 2.5rem;
+        display: flex;
+        align-items: baseline;
+        gap: 1rem;
+      }
+      .header-num {
+        font-family: "Syne", sans-serif;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        color: var(--accent);
+        text-transform: uppercase;
+      }
+      .header h1 {
+        font-family: "Syne", sans-serif;
+        font-size: 1.35rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+
+      /* ── Consigna ── */
+      .consigna {
+        width: 100%;
+        max-width: 700px;
+        background: var(--ink);
+        color: var(--paper);
+        border-radius: 4px;
+        padding: 1.2rem 1.5rem;
+        margin-bottom: 2rem;
+        font-size: 0.88rem;
+        line-height: 1.7;
+      }
+      .consigna strong {
+        color: var(--accent);
+      }
+      .consigna ul {
+        margin-top: 0.6rem;
+        padding-left: 1.2rem;
+      }
+      .consigna li {
+        margin-bottom: 0.3rem;
+      }
+
+      /* ── Formulario ── */
+      .form-card {
+        width: 100%;
+        max-width: 700px;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+      }
+      .form-card h2 {
+        font-family: "Syne", sans-serif;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--mid);
+        margin-bottom: 1.4rem;
+      }
+
+      .fila {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      @media (max-width: 520px) {
+        .fila {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .campo {
+        margin-bottom: 1rem;
+      }
+      .campo label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--mid);
+        margin-bottom: 0.4rem;
+      }
+      .campo input,
+      .campo select {
+        width: 100%;
+        padding: 0.65rem 0.9rem;
+        border: 1.5px solid var(--border);
+        border-radius: 4px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.9rem;
+        background: var(--paper);
+        color: var(--ink);
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .campo input:focus,
+      .campo select:focus {
+        border-color: var(--ink);
+      }
+
+      .btn {
+        margin-top: 0.5rem;
+        padding: 0.7rem 2rem;
+        background: var(--accent);
+        color: #fff;
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 0.88rem;
+        letter-spacing: 0.05em;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
+      .btn:hover {
+        opacity: 0.85;
+      }
+
+      /* ── Tarjeta resultado ── */
+      .tarjeta-resultado {
+        width: 100%;
+        max-width: 700px;
+        border: 2px solid var(--border);
+        border-radius: 6px;
+        overflow: hidden;
+        display: none;
+      }
+      .tarjeta-resultado.visible {
+        display: block;
+      }
+
+      .tarjeta-top {
+        background: var(--ink);
+        color: var(--paper);
+        padding: 2rem 2rem 1.5rem;
+      }
+      .tarjeta-nombre {
+        font-family: "Syne", sans-serif;
+        font-size: 2rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1;
+      }
+      .tarjeta-profesion {
+        font-size: 0.88rem;
+        color: var(--accent);
+        margin-top: 0.4rem;
+        font-weight: 500;
+      }
+
+      .tarjeta-body {
+        padding: 1.5rem 2rem;
+        background: var(--card-bg);
+      }
+      .tarjeta-fila {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.9rem;
+      }
+      .tarjeta-fila:last-child {
+        border-bottom: none;
+      }
+      .tarjeta-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--mid);
+        min-width: 90px;
+      }
+
+      /* ── Alerta error ── */
+      .alerta {
+        width: 100%;
+        max-width: 700px;
+        padding: 0.9rem 1.2rem;
+        border-radius: 4px;
+        font-size: 0.88rem;
+        margin-bottom: 1rem;
+        display: none;
+        border-left: 4px solid var(--accent);
+        background: #fff0f0;
+        color: #8b0000;
+      }
+      .alerta.visible {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <span class="header-num">EJ — 01</span>
+      <h1>Tarjeta de Presentación Personal</h1>
+    </div>
+
+    <!-- CONSIGNA -->
+    <div class="consigna">
+      <strong>🎯 Tu misión:</strong> Usando JavaScript, captura los datos del
+      formulario y genera dinámicamente la tarjeta de presentación de abajo.<br /><br />
+      <strong>Debes aplicar:</strong>
+      <ul>
+        <li>
+          Variables <code>const</code> y <code>let</code> con nombres
+          descriptivos en camelCase
+        </li>
+        <li>
+          <code>document.getElementById()</code> para seleccionar elementos
+        </li>
+        <li>
+          Conversión de tipos con <code>Number()</code> y validación con
+          <code>typeof</code>
+        </li>
+        <li>Template literals para construir los mensajes</li>
+        <li>
+          Manipulación del DOM: <code>.textContent</code>,
+          <code>.className</code>, <code>.style</code>
+        </li>
+        <li>Validación de campos vacíos antes de procesar</li>
+      </ul>
+    </div>
+
+    <!-- FORMULARIO -->
+    <div class="form-card">
+      <h2>Datos de entrada</h2>
+
+      <div class="fila">
+        <div class="campo">
+          <label>Nombre completo</label>
+          <input type="text" id="inputName" placeholder="Ej: Laura Gómez" />
+        </div>
+        <div class="campo">
+          <label>Edad</label>
+          <input type="number" id="ageText" placeholder="Ej: 22" />
+        </div>
+      </div>
+
+      <div class="fila">
+        <div class="campo">
+          <label>Profesión / Carrera</label>
+          <input type="text" id="cardRole" placeholder="Ej: Diseñadora UX" />
+        </div>
+        <div class="campo">
+          <label>Ciudad</label>
+          <input type="text" id="theCity" placeholder="Ej: Barranquilla" />
+        </div>
+      </div>
+
+      <div class="campo">
+        <label for="opciones">Habilidad principal</label>
+        <select id="opciones">
+          <option value="">— Selecciona —</option>
+          <option value="JavaScript">JavaScript</option>
+          <option value="Python">Python</option>
+          <option value="Diseño UI">Diseño UI</option>
+          <option value="Base de datos">Base de datos</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+
+      <button class="btn" onclick="generateCard()">Generar tarjeta</button>
+    </div>
+
+    <!-- ALERTA -->
+    <div class="alerta">⚠️ Mensaje de error aquí</div>
+
+    <!-- TARJETA RESULTADO (oculta por defecto) -->
+    <div class="tarjeta-resultado" id="cardResult">
+      <div class="tarjeta-top">
+        <div class="tarjeta-nombre" id="fullName">Nombre Apellido</div>
+        <div class="tarjeta-profesion" id="cardOrigin">Profesión · Ciudad</div>
+      </div>
+      <div class="tarjeta-body">
+        <div class="tarjeta-fila">
+          <span class="tarjeta-label">Edad</span>
+          <span id="ageCard">— años</span>
+        </div>
+        <div class="tarjeta-fila">
+          <span class="tarjeta-label">¿Mayor de edad?</span>
+          <span id="ageGuess">—</span>
+        </div>
+        <div class="tarjeta-fila">
+          <span class="tarjeta-label">Habilidad</span>
+          <span id="option">—</span>
+        </div>
+        <div class="tarjeta-fila">
+          <span class="tarjeta-label">Tipo "edad"</span>
+          <span id="dataCheck">—</span>
+        </div>
+
+        <div class="result" id="resultCard"></div>
+      </div>
+    </div>
+
+    <!-- ╔══════════════════════════════════════════╗
+       ║  ✏️  ESCRIBE TU JAVASCRIPT AQUÍ ABAJO   ║
+       ╚══════════════════════════════════════════╝ -->
+    <script>
+      // 1. Agrega IDs a los elementos HTML que necesites
+      // 2. Crea la función que se ejecuta al hacer clic en el botón
+      // 3. Selecciona los inputs, lee sus valores y conviértelos al tipo correcto
+      // 4. Valida que ningún campo esté vacío — muestra la alerta si es necesario
+      // 5. Construye el mensaje con template literals
+      // 6. Inyecta los datos en cada parte de la tarjeta-resultado
+      // 7. Muestra la tarjeta usando .className = "tarjeta-resultado visible"
+
+      function generateCard() {
+        // Pedirle datos al usuario por ID
+        /* A través de la función getElementById, le pido a mi script que identifique los datos de campo que escribe el usuario para hacer su tarjeta de presentación.*/
+
+        const nombre = document.getElementById("inputName").value.trim();
+
+        const edadTexto = document.getElementById("ageText");
+
+        const edad = Number(edadTexto.value);
+
+        const rol = document.getElementById("cardRole").value.trim();
+
+        const ciudad = document.getElementById("theCity").value.trim();
+
+        const seleccionarOpción = document.getElementById("opciones").value;
+
+        const caja = document.getElementById("cardResult");
+
+        const esMayordeEdad = edad >= 18;
+        const datos = typeof edad
+
+        // Validación de datos.
+        /* Utilizo if para poder validar los datos en el caso de que el usuario no escriba sus datos*/
+        if (!nombre || !rol) {
+          caja.textContent = "Por favor, escribe su nombre y profesión";
+          caja.className = "tarjeta-resultado visible error";
+          return
+        }
+        if (!ciudad) {
+          caja.textContent = "Por favor, escribe su ciudad de residencia";
+          caja.className = "tarjeta-resultado visible error";
+          return
+        }
+        if (!edadTexto) {
+          caja.textContent = "Por favor, escribe su edad";
+          caja.className = "tarjeta-resultado visible error";
+          return
+        }
+        if (!seleccionarOpción){
+          caja.textContent = "Por favor, escribe habilidad de preferencia"
+          caja.className = "tarjeta-resultado visible error"
+          return
+        } 
+
+        // Create div's card
+        const div = document.createElement("div");
+        div.className = "resultCard";
+        div.innerHTML = `
+        <div class="tarjeta-resultado">
+            <span>${nombre} ${edad}</span>
+        </div>
+        `;
+        document.getElementById("cardResult").textContent.style = caja;
+        document.getElementById("fullName").textContent = nombre;
+        document.getElementById("cardOrigin").textContent = `${rol} · ${ciudad}`;
+        document.getElementById("ageCard").textContent = `${edad}`;
+        document.getElementById("ageGuess").textContent = `${esMayordeEdad}`;
+        document.getElementById("dataCheck").textContent = `${datos}`;
+        document.getElementById("option").textContent = `${seleccionarOpción}`;
+
+        caja.className = "tarjeta-resultado visible";
+        caja.style.display = "block";
+
+        console.log("Funciona"); 
+      }
+    </script>
+  </body>
+</html>

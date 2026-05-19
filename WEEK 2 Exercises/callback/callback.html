@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ejercicio 2 — Callbacks: filter · map · reduce</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #F9FAFC; color: #181E4B; }
+
+    header { background: #6B5CFF; color: #fff; padding: 1.5rem 2rem; }
+    header h1 { font-size: 1.5rem; }
+    header p  { font-size: 0.9rem; opacity: 0.85; margin-top: 0.3rem; }
+
+    .contenedor { max-width: 820px; margin: 2rem auto; padding: 0 1.5rem 3rem; }
+
+    .teoria { background: #fff; border-left: 5px solid #6B5CFF; border-radius: 10px; padding: 1.4rem 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .teoria h2 { color: #6B5CFF; font-size: 1rem; margin-bottom: 0.6rem; }
+    .teoria p  { font-size: 0.92rem; line-height: 1.75; color: #444; margin-bottom: 0.5rem; }
+
+    pre { background: #181E4B; color: #A5B4FC; padding: 1rem 1.2rem; border-radius: 8px; font-size: 0.82rem; line-height: 1.75; overflow-x: auto; margin: 0.8rem 0; white-space: pre; }
+
+    .ejercicio { background: #fff; border-radius: 10px; padding: 1.4rem 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .ejercicio h3 { font-size: 0.98rem; margin-bottom: 0.6rem; padding-bottom: 0.5rem; border-bottom: 2px solid #ECF0F6; }
+    .ejercicio p  { font-size: 0.85rem; color: #666; margin-bottom: 0.8rem; line-height: 1.6; }
+
+    .pasos { margin-bottom: 1rem; }
+    .paso { display: flex; gap: 0.8rem; align-items: flex-start; padding: 0.65rem 0.9rem; border-radius: 8px; border: 2px solid #ECF0F6; margin-bottom: 0.5rem; font-size: 0.85rem; transition: border 0.2s; }
+    .paso:hover { border-color: #6B5CFF; }
+    .paso-num { background: #6B5CFF; color: #fff; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 700; flex-shrink: 0; }
+    .paso-txt { color: #444; line-height: 1.6; }
+    .paso-txt code { background: #EDE9FF; color: #6B5CFF; padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.8rem; }
+    .paso-txt strong { color: #181E4B; }
+
+    label { display: block; font-size: 0.83rem; font-weight: 600; color: #6B5CFF; margin-bottom: 0.3rem; }
+    select { width: 100%; padding: 0.6rem 0.9rem; border: 2px solid #ECF0F6; border-radius: 8px; font-size: 0.92rem; margin-bottom: 0.9rem; outline: none; transition: border 0.2s; }
+    select:focus { border-color: #6B5CFF; }
+
+    .btn { background: #6B5CFF; color: #fff; border: none; padding: 0.6rem 1.4rem; border-radius: 8px; font-size: 0.92rem; cursor: pointer; transition: background 0.2s; margin-right: 8px; margin-bottom: 6px; }
+    .btn:hover { background: #5546E8; }
+
+    .resultado { margin-top: 1rem; padding: 1rem; border-radius: 8px; font-size: 0.9rem; display: none; line-height: 1.7; }
+    .resultado.visible { display: block; }
+    .resultado.ok      { background: #D1FAF0; border-left: 4px solid #5ACCA4; color: #065F46; }
+    .resultado.error   { background: #FFE8E4; border-left: 4px solid #FE654F; color: #7F1D1D; }
+    .resultado.info    { background: #EDE9FF; border-left: 4px solid #6B5CFF; color: #3B2FAA; }
+    .resultado pre     { background: #181E4B; color: #A5B4FC; border-radius: 6px; padding: 0.7rem 1rem; font-size: 0.79rem; margin-top: 0.5rem; }
+
+    table { width: 100%; border-collapse: collapse; margin: 0.8rem 0; font-size: 0.88rem; }
+    th { background: #6B5CFF; color: #fff; padding: 0.5rem 0.8rem; text-align: left; }
+    td { padding: 0.45rem 0.8rem; border-bottom: 1px solid #ECF0F6; }
+    tr:nth-child(even) { background: #F9FAFC; }
+    .disp-si { color: #065F46; font-weight: 600; }
+    .disp-no { color: #991B1B; font-weight: 600; }
+
+    /* Mini descripción de cada método */
+    .metodo-desc { background: #EDE9FF; border-radius: 8px; padding: 0.7rem 1rem; font-size: 0.84rem; color: #3B2FAA; margin-bottom: 0.8rem; line-height: 1.65; }
+    .metodo-desc code { background: rgba(107,92,255,0.15); padding: 0.1rem 0.4rem; border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Ejercicio 2 — Callbacks</h1>
+  <p>filter · map · reduce · Lección 2</p>
+</header>
+
+<div class="contenedor">
+
+  <div class="teoria">
+    <h2>Recuerda: callbacks en métodos de array</h2>
+    <p>
+      Un <strong>callback</strong> es una función que pasas como argumento.
+      Los métodos de array la llaman una vez por cada elemento para saber qué hacer con él.
+    </p>
+    <pre>
+// .filter(callback) → retorna nuevo array solo con los que pasen la prueba
+// .map(callback)    → retorna nuevo array transformando cada elemento
+// .reduce(callback, valorInicial) → reduce el array a un único valor
+
+const nums = [1, 2, 3, 4];
+nums.filter(n => n > 2);            // [3, 4]   — el callback retorna true/false
+nums.map(n => n * 10);              // [10,20,30,40] — retorna la transformación
+nums.reduce((acc, n) => acc + n, 0); // 10       — acc acumula, retorna el nuevo acc</pre>
+  </div>
+
+  <!-- DATOS -->
+  <div class="ejercicio">
+    <h3>📦 Array con el que trabajarás</h3>
+    <table>
+      <thead><tr><th>Nombre</th><th>Precio</th><th>Disponible</th></tr></thead>
+      <tbody>
+        <tr><td>Laptop</td>  <td>$3.500.000</td><td class="disp-si">✅ true</td></tr>
+        <tr><td>Mouse</td>   <td>$85.000</td>   <td class="disp-si">✅ true</td></tr>
+        <tr><td>Monitor</td> <td>$1.200.000</td><td class="disp-no">❌ false</td></tr>
+        <tr><td>Teclado</td> <td>$150.000</td>  <td class="disp-si">✅ true</td></tr>
+        <tr><td>Webcam</td>  <td>$250.000</td>  <td class="disp-no">❌ false</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PARTE A: filter -->
+  <div class="ejercicio">
+    <h3>🧪 Parte A — filter()</h3>
+    <div class="metodo-desc">
+      <strong>filter</strong> recorre el array y retorna un <strong>nuevo array</strong>
+      con los elementos donde tu callback retorna <code>true</code>.
+      El array original no cambia.
+    </div>
+    <div class="pasos">
+      <div class="paso">
+        <div class="paso-num">1</div>
+        <div class="paso-txt">Escribe el callback dentro de <code>productos.filter()</code>. El callback recibe cada producto como parámetro — llámalo <code>p</code>.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">2</div>
+        <div class="paso-txt">El callback debe retornar <strong>true o false</strong>. Para quedarnos con los disponibles, retorna la propiedad <code>p.disponible</code> — ella ya es un booleano.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">3</div>
+        <div class="paso-txt">El resultado debería ser un array con <strong>3 productos</strong>: Laptop, Mouse y Teclado.</div>
+      </div>
+    </div>
+    <pre>
+// COMPLETA el callback:
+const disponibles = productos.filter( /* escribe aquí tu callback */ );
+
+// Resultado esperado: [ Laptop, Mouse, Teclado ]</pre>
+    <button class="btn" onclick="probarFilter()">▶ Ejecutar filter</button>
+    <div class="resultado" id="resFilter"></div>
+  </div>
+
+  <!-- PARTE B: map -->
+  <div class="ejercicio">
+    <h3>🧪 Parte B — map()</h3>
+    <div class="metodo-desc">
+      <strong>map</strong> transforma cada elemento y retorna un <strong>nuevo array del mismo tamaño</strong>.
+      Si entran 5 objetos, salen 5 transformaciones.
+    </div>
+    <div class="pasos">
+      <div class="paso">
+        <div class="paso-num">1</div>
+        <div class="paso-txt">Escribe el callback dentro de <code>productos.map()</code>. Recibe cada producto <code>p</code>.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">2</div>
+        <div class="paso-txt">El callback debe retornar <strong>solo el nombre</strong> de cada producto. Accede a él con <code>p.nombre</code>.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">3</div>
+        <div class="paso-txt">El resultado es un array de <strong>5 strings</strong>, uno por cada producto.</div>
+      </div>
+    </div>
+    <pre>
+// COMPLETA el callback:
+const nombres = productos.map( /* escribe aquí tu callback */ );
+
+// Resultado esperado: [ "Laptop", "Mouse", "Monitor", "Teclado", "Webcam" ]</pre>
+    <button class="btn" onclick="probarMap()">▶ Ejecutar map</button>
+    <div class="resultado" id="resMap"></div>
+  </div>
+
+  <!-- PARTE C: reduce -->
+  <div class="ejercicio">
+    <h3>🧪 Parte C — reduce()</h3>
+    <div class="metodo-desc">
+      <strong>reduce</strong> acumula los elementos en un <strong>único valor</strong>.
+      El callback recibe <code>(acumulador, elemento)</code> y debe retornar el nuevo acumulador.
+      El segundo argumento de reduce es el <strong>valor inicial</strong> del acumulador.
+    </div>
+    <div class="pasos">
+      <div class="paso">
+        <div class="paso-num">1</div>
+        <div class="paso-txt">Primero filtra los disponibles (ya lo hiciste en la Parte A). Usa la misma lógica.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">2</div>
+        <div class="paso-txt">Escribe el callback de reduce. Recibe <code>(acc, p)</code>. Debe retornar <code>acc + p.precio</code> para ir acumulando.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">3</div>
+        <div class="paso-txt">Después del callback pon <code>, 0</code> — ese es el valor inicial del acumulador. Si lo omites, puede dar error con arrays vacíos.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">4</div>
+        <div class="paso-txt">El resultado debe ser <strong>$3.735.000</strong> (Laptop + Mouse + Teclado).</div>
+      </div>
+    </div>
+    <pre>
+// Paso 1: filtra los disponibles
+const disponibles = productos.filter( /* mismo callback de la Parte A */ );
+
+// Paso 2: COMPLETA el callback de reduce:
+const total = disponibles.reduce( /* callback */, 0 );
+//                                               ↑ valor inicial del acumulador
+
+// Resultado esperado: 3735000</pre>
+    <button class="btn" onclick="probarReduce()">▶ Ejecutar reduce</button>
+    <div class="resultado" id="resReduce"></div>
+  </div>
+
+</div>
+
+<script src="/WEEK 2 Exercises/callback/callback.js"></script>
+</body>
+</html>

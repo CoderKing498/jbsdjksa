@@ -1,0 +1,24 @@
+{
+  "name": "javascript-moodle",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CoderKing498/JAVASCRIPT-moodle.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/CoderKing498/JAVASCRIPT-moodle/issues"
+  },
+  "homepage": "https://github.com/CoderKing498/JAVASCRIPT-moodle#readme",
+  "dependencies": {
+    "prompt-sync": "^4.2.0"
+  }
+}

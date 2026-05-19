@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ejercicio 4 — This: Galería de imágenes</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #F9FAFC; color: #181E4B; }
+
+    header { background: #6B5CFF; color: #fff; padding: 1.5rem 2rem; }
+    header h1 { font-size: 1.5rem; }
+    header p  { font-size: 0.9rem; opacity: 0.85; margin-top: 0.3rem; }
+
+    .contenedor { max-width: 820px; margin: 2rem auto; padding: 0 1.5rem 3rem; }
+
+    .teoria { background: #fff; border-left: 5px solid #6B5CFF; border-radius: 10px; padding: 1.4rem 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .teoria h2 { color: #6B5CFF; font-size: 1rem; margin-bottom: 0.6rem; }
+    .teoria p  { font-size: 0.92rem; line-height: 1.75; color: #444; margin-bottom: 0.5rem; }
+
+    pre { background: #181E4B; color: #A5B4FC; padding: 1rem 1.2rem; border-radius: 8px; font-size: 0.82rem; line-height: 1.75; overflow-x: auto; margin: 0.8rem 0; white-space: pre; }
+
+    .ejercicio { background: #fff; border-radius: 10px; padding: 1.4rem 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .ejercicio h3 { font-size: 0.98rem; margin-bottom: 0.6rem; padding-bottom: 0.5rem; border-bottom: 2px solid #ECF0F6; }
+    .ejercicio p  { font-size: 0.85rem; color: #666; margin-bottom: 0.8rem; line-height: 1.6; }
+
+    .pasos { margin-bottom: 1rem; }
+    .paso { display: flex; gap: 0.8rem; align-items: flex-start; padding: 0.65rem 0.9rem; border-radius: 8px; border: 2px solid #ECF0F6; margin-bottom: 0.5rem; font-size: 0.85rem; transition: border 0.2s; }
+    .paso:hover { border-color: #6B5CFF; }
+    .paso-num { background: #6B5CFF; color: #fff; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 700; flex-shrink: 0; }
+    .paso-txt { color: #444; line-height: 1.6; }
+    .paso-txt code { background: #EDE9FF; color: #6B5CFF; padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.8rem; }
+    .paso-txt strong { color: #181E4B; }
+
+    .btn { background: #6B5CFF; color: #fff; border: none; padding: 0.6rem 1.4rem; border-radius: 8px; font-size: 0.92rem; cursor: pointer; transition: background 0.2s; margin-right: 8px; margin-bottom: 6px; }
+    .btn:hover { background: #5546E8; }
+    .btn-danger { background: #FE654F; } .btn-danger:hover { background: #e0452f; }
+
+    .resultado { margin-top: 1rem; padding: 1rem; border-radius: 8px; font-size: 0.9rem; display: none; line-height: 1.7; }
+    .resultado.visible { display: block; }
+    .resultado.ok      { background: #D1FAF0; border-left: 4px solid #5ACCA4; color: #065F46; }
+    .resultado.error   { background: #FFE8E4; border-left: 4px solid #FE654F; color: #7F1D1D; }
+    .resultado pre     { background: #181E4B; color: #A5B4FC; border-radius: 6px; padding: 0.7rem 1rem; font-size: 0.79rem; margin-top: 0.5rem; }
+
+    .galeria { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.8rem; margin: 0.8rem 0; }
+    .galeria-card { border: 2px solid #ECF0F6; border-radius: 10px; padding: 1.1rem 0.8rem; text-align: center; cursor: pointer; transition: all 0.2s; user-select: none; background: #fff; }
+    .galeria-card:hover { border-color: #6B5CFF; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(107,92,255,0.15); }
+    .galeria-card.activa { border-color: #6B5CFF; background: #EDE9FF; }
+    .galeria-card .emoji  { font-size: 2.2rem; }
+    .galeria-card .nombre { font-size: 0.82rem; color: #444; margin-top: 0.4rem; font-weight: 600; }
+    .galeria-card .vistas { font-size: 0.72rem; color: #6B5CFF; font-weight: 700; margin-top: 0.2rem; }
+    .galeria-card .barra  { height: 4px; background: #ECF0F6; border-radius: 99px; margin-top: 0.4rem; overflow: hidden; }
+    .galeria-card .barra-fill { height: 100%; background: #6B5CFF; border-radius: 99px; transition: width 0.3s; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Ejercicio 4 — This</h1>
+  <p>Galería con contador de vistas · Lección 2</p>
+</header>
+
+<div class="contenedor">
+
+  <div class="teoria">
+    <h2>Recuerda: cómo funciona "this"</h2>
+    <p>
+      Dentro de un método de objeto, <code>this</code> apunta al <strong>propio objeto</strong>.
+      Lo usamos cuando un método necesita acceder a las propiedades del objeto donde vive.
+    </p>
+    <pre>
+const alumno = {
+  nombre: "Ana",
+  notas : [80, 90, 75],
+
+  promedio() {
+    // "this" apunta al objeto "alumno"
+    const suma = this.notas.reduce((acc, n) => acc + n, 0);
+    return suma / this.notas.length;
+    // this.notas.length → accede al array del propio objeto
+  },
+
+  presentar() {
+    // this.nombre → accede a la propiedad del propio objeto
+    // this.promedio() → llama al método del propio objeto
+    return `${this.nombre} tiene promedio ${this.promedio()}`;
+  },
+};
+
+alumno.presentar(); // "Ana tiene promedio 81.67"</pre>
+  </div>
+
+  <!-- EJERCICIO seleccionar -->
+  <div class="ejercicio">
+    <h3>🧪 Parte A — Completa el método seleccionar(id)</h3>
+    <p>Este método debe encontrar la imagen por id, incrementar sus vistas y actualizar el DOM.</p>
+
+    <div class="pasos">
+      <div class="paso">
+        <div class="paso-num">1</div>
+        <div class="paso-txt">Usa <code>this.imagenes.find()</code> para buscar la imagen por id. El callback debe retornar <code>true</code> cuando <code>i.id === id</code>.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">2</div>
+        <div class="paso-txt">Si <code>img</code> no existe (undefined es falsy), usa <code>return</code> para salir.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">3</div>
+        <div class="paso-txt">Incrementa el contador: <code>img.vistas++</code>.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">4</div>
+        <div class="paso-txt">Llama a <code>this.renderizar()</code> con <strong>this</strong>, no con el nombre de la variable. Así el método no queda atado al nombre.</div>
+      </div>
+    </div>
+
+    <pre>
+const galeria = {
+  imagenes: [
+    { id: 1, emoji: "🌅", nombre: "Amanecer",  vistas: 0 },
+    { id: 2, emoji: "🌊", nombre: "Océano",    vistas: 0 },
+    { id: 3, emoji: "🏔️", nombre: "Montaña",   vistas: 0 },
+    { id: 4, emoji: "🌺", nombre: "Flores",    vistas: 0 },
+    { id: 5, emoji: "🌃", nombre: "Ciudad",    vistas: 0 },
+  ],
+
+  seleccionar(id) {
+    // Paso 1: usa this.imagenes.find() con un callback que compare por id
+    const img = /* this.imagenes.find( callback ) */;
+
+    // Paso 2: si no existe, sal con return
+    if ( /* condición */ ) return;
+
+    // Paso 3: incrementa las vistas
+    /* img.vistas... */;
+
+    // Paso 4: llama a renderizar() con this
+    /* this.... */;
+
+    return img;
+  },
+
+  // Ya implementado — no modificar
+  renderizar() { /* ... */ },
+};</pre>
+  </div>
+
+  <!-- EJERCICIO masVista -->
+  <div class="ejercicio">
+    <h3>🧪 Parte B — Completa el método masVista()</h3>
+    <p>Este método debe encontrar la imagen con más vistas usando <code>this</code> y <code>reduce</code>.</p>
+
+    <div class="pasos">
+      <div class="paso">
+        <div class="paso-num">1</div>
+        <div class="paso-txt">Accede al array con <code>this.imagenes</code> y llama a <code>.reduce()</code>.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">2</div>
+        <div class="paso-txt">El callback de reduce recibe <code>(mejor, img)</code>. Retorna <code>img</code> si tiene más vistas que <code>mejor</code>, si no retorna <code>mejor</code>.</div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">3</div>
+        <div class="paso-txt">No pongas valor inicial en reduce — así el primer elemento del array actúa como punto de partida.</div>
+      </div>
+    </div>
+
+    <pre>
+  masVista() {
+    // Usa this.imagenes.reduce() para encontrar la de más vistas
+    // El callback compara img.vistas con mejor.vistas
+    return /* this.imagenes.reduce( callback ) */;
+  },</pre>
+  </div>
+
+  <!-- ÁREA DE PRUEBA -->
+  <div class="ejercicio">
+    <h3>▶ Prueba tu solución aquí</h3>
+    <p>Haz clic en las imágenes para seleccionarlas. El contador de vistas debe subir.</p>
+    <div class="galeria" id="galeriaContainer"></div>
+    <button class="btn" onclick="verMasVista()">🏆 Ver la más vista</button>
+    <button class="btn btn-danger" onclick="reiniciar()">Reiniciar vistas</button>
+    <div class="resultado" id="resultado"></div>
+  </div>
+
+</div>
+
+<script src="/WEEK 2 Exercises/this/this.js"></script>
+</body>
+</html>
