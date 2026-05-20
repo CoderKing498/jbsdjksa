@@ -1010,7 +1010,19 @@
     const estiloBox = document.getElementById("estilo-box")
     const salida6  = document.getElementById("salida-6")
 
-    selColor.addEventListener("change", () => {})
+    selColor.addEventListener("change", () => {
+        estiloBox.style.backgroundColor = selColor.value
+        salida6.textContent = `estiloBox.style.backgroundColor = "${selColor.value}";`
+    })
+    selSize.addEventListener("change", () => {
+        estiloBox.style.fontSize = selSize.value
+        salida6.textContent = `estiloBox.style.fontSize = "${selSize.value}";`
+    })
+    selRadius.addEventListener("change", () => {
+        estiloBox.style.borderRadius = selRadius.value
+        salida6.textContent = `estiloBox.style.borderRadius = "${selRadius.value}";`
+    })
+    estiloBox.style.transition = "all 0.3s"; 
 
 
   // ════════════════════════════════════════════════════
@@ -1022,8 +1034,13 @@
   //  → btn-7-type: alterna entre type="text" y
   //    type="password" con setAttribute.
   // ════════════════════════════════════════════════════
+    const input7 = document.getElementById("input-7")
+    const btn7Read = document.getElementById("btn-7-read")
+    const btn7Set = document.getElementById("btn-7-set")
+    const btn7Type = document.getElementById("btn-7-type")
+    const salida7 = document.getElementbyID("salida-7")
 
-
+    
 
   // ════════════════════════════════════════════════════
   //  EJ 8 — localStorage
@@ -1035,7 +1052,11 @@
   //  → btn-8-clear: borra con removeItem y limpia lista.
   //  Muestra la operación en #salida-8.
   // ════════════════════════════════════════════════════
-
+    const input8 = document.getElementById("input-8")
+    const btn7Add = document.getElementById("btn-7-add")
+    const btn7Clear = document.getElementById("btn-7-clear")
+    const lista8 = document.getElementById("lista-8")
+    const salida8 = document.getElementbyID("salida-8")
 
 
   // ════════════════════════════════════════════════════
@@ -1048,7 +1069,11 @@
   //  → #btn-9-clear: limpia #log-9
   //  Cada entrada en el log debe tener la hora actual.
   // ════════════════════════════════════════════════════
-
+    const input9 = document.getElementById("input-9")
+    const btn9 = document.getElementById("btn-9")
+    const btn9Clear = document.getElementById("btn-9-clear")
+    const Log9 = document.getElementById("log-9")
+    
 
 
   // ════════════════════════════════════════════════════
@@ -1060,6 +1085,8 @@
   //  → Bonus: mousedown inicia dibujo, mousemove traza
   //    la línea, mouseup lo detiene.
   // ════════════════════════════════════════════════════
+    const canvas10 = document.getElementById("canvas-10")
+    const salida10 = document.getElementById("salida-10")
 
 
 
@@ -1075,7 +1102,12 @@
   //     - nextElementSibling (texto o "ninguno")
   //     - previousElementSibling (texto o "ninguno")
   // ════════════════════════════════════════════════════
-
+    const lista11 = document.getElementById("lista-11")
+    const liA = document.getElementById("li-a")
+    const liB = document.getElementById("li-b")
+    const liC = document.getElementById("li-c")
+    const liD = document.getElementById("li-d")
+    const salida11 = document.getElementById("salida-11")
 
 
   // ════════════════════════════════════════════════════
@@ -1090,6 +1122,10 @@
   //    limpia las clases, muestra info en #salida-12.
   //  → dragend en documento: limpia "arrastrando".
   // ════════════════════════════════════════════════════
+
+  const dzonaA = document.getElementById("dzona-a")
+  const dzonaB = document.getElementbyId("dzona-b")
+  const salida12 = document.getElementById("salida-12")
 </script>
 </body>
 </html>
