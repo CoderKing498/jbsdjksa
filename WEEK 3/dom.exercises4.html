@@ -1045,12 +1045,12 @@
     })
 
     btn7Set.addEventListener("click", () => {
-    const newPlaceholder = input7.value
-    input7.setAttribute("placeholder", newPlaceholder)
+    const newPlaceholder = input7.value;
+    input7.setAttribute("placeholder", newPlaceholder);
     })
     btn7Type.addEventListener("click", () =>
     {
-     input7.type = input7.type === "password" ? "text" : "password"
+     input7.type = input7.type === "password" ? "text" : "password";
     })
 
     
@@ -1072,11 +1072,24 @@
     const salida8 = document.getElementById("salida-8")
 
     btn8Add.addEventListener("click", () => {
-
+      
+      const nota = input8.value.trim()
+      if (nota !== '') {
+        let notas = JSON.parse(localStorage.getItem("notas") || "[]");
+        notas.push(nota);
+        localStorage.setItem("notas", JSON.stringify(notas));
+        const li = document.createElement("li");
+        li.textContent = nota;
+        lista8.appendChild(li);
+        input8.value = "";
+        salida8.textContent = `Nota guardada: "${nota}"`;
+      }
     })
 
     btn8Clear.addEventListener("click", () => {
-
+      localStorage.removeItem("notas");
+      lista8.innerHTML = '';
+      salida8.textContent = "Notas borradas";
     })
 
 
@@ -1095,12 +1108,20 @@
     const btn9Clear = document.getElementById("btn-9-clear")
     const Log9 = document.getElementById("log-9")
 
-    btn9.addEventListener("keydown", () => {
-
-
+    btn9.addEventListener("keydown", (e) => {
+      const time = new Date().toLocaleTimeString()
+      Log9.textContent += `[${time}] Tecla presionada: ${e.key}\n`
+    })
+    btn9.addEventListener("focus", () => {
+      const time = new Date().toLocaleTimeString()
+      Log9.textContent += `[${time}] Input enfocado\n`
+    })
+    btn9.addEventListener("blur", () => {
+      const time = new Date().toLocaleTimeString()
+      Log9.textContent += `[${time}] Input desenfocado\n`
     })
     btn9Clear.addEventListener("click", () => {
-      input9.textContent = ""
+      Log9.textContent = ''
     })
     
 
@@ -1116,9 +1137,32 @@
   // ════════════════════════════════════════════════════
     const canvas10 = document.getElementById("canvas-10")
     const salida10 = document.getElementById("salida-10")
+    const ctx10 = canvas10.getContext("2d")
+    let isDrawing = false
+    let lastX = 0
+    let lastY = 0 
 
-
-
+    canvas10.addEventListener("mousemove", (e) =>{
+      const {offsetX, offsetY} = e
+      salida10.textContent = `Mouse en: (${offsetX}, ${offsetY})`
+      if (isDrawing) {
+        ctx10.beginPath()
+        ctx10.moveTo(lastX, lastY)
+        ctx10.lineTo(offsetX, offsetY)
+        ctx10.stroke()
+      }
+      lastX = offsetX
+      lastY = offsetY
+    })
+    mouse10.addEventListener("mousedown", () => {
+      isDrawing = true
+    })
+    mouse10.addEventListener("mouseup", () => {
+      isDrawing = false
+    })
+    mouse10.addEventListener("mouseout", () => {
+      isDrawing = false
+    })
   // ════════════════════════════════════════════════════
   //  EJ 11 — DOM Traversal
   //  Tarea: agrega un click listener a cada <li> de
@@ -1138,6 +1182,9 @@
     const liD = document.getElementById("li-d")
     const salida11 = document.getElementById("salida-11")
 
+    const liNodes = [liA, liB, liC, liD]
+    
+
 
   // ════════════════════════════════════════════════════
   //  EJ 12 — Drag & Drop
@@ -1155,6 +1202,8 @@
   const dzonaA = document.getElementById("dzona-a")
   const dzonaB = document.getElementbyId("dzona-b")
   const salida12 = document.getElementById("salida-12")
+ 
+
 </script>
 </body>
 </html>
